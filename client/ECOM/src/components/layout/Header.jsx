@@ -40,7 +40,7 @@ const Header = () => {
   ];
 
   return (
-    <header className="bg-gray-900 text-white">
+    <header className="bg-gray-900 text-white sticky top-0 z-50">
       {/* Top Bar */}
       <div className="bg-gray-800 py-1">
         <div className="container mx-auto px-4 flex justify-between text-xs sm:text-sm md:text-xs lg:text-sm text-white">
@@ -60,14 +60,16 @@ const Header = () => {
       </div>
 
       {/* Main Header */}
-      <div className="w-full px-4 py-3 flex items-center">
+      <div className="w-full px-4 py-2 flex items-center">
   {/* Logo */}
   <Link
-    to="/"
-    className="text-xl md:text-2xl font-bold text-orange-400"
-  >
-    NepaliBazar
-  </Link>
+  to="/"
+  className="flex items-center gap-0 text-2xl md:text-2xl font-bold text-orange-400"
+>
+  <img src="/images/nepal-01-1.svg" alt="logo" className="h-9 w-10 "  />
+  NepaliBazar
+</Link>
+
 
   {/* User Actions */}
   <div className="flex items-center space-x-2 ml-auto">
@@ -130,9 +132,9 @@ const Header = () => {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="flex-1 
-                rounded-none rounded-l-lg border-0 bg-white text-gray-900 mb-1.5 font-bold"
+                rounded-none rounded-l-lg border-0 bg-white text-gray-900 mb-1.5 font-bold "
               />
-              <Button type="submit" className="bg-orange-400 hover:bg-orange-500 rounded-l-none px-4 cursor-pointer *:focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2">
+              <Button type="submit" className="bg-orange-400 hover:bg-orange-500 rounded-l-none px-4 cursor-pointer ">
                 <Search className="h-5 w-4"style={{ width: '20px', height: '28px',  }}  />
               </Button>
             </form>
