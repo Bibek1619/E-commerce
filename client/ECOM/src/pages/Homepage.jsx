@@ -7,7 +7,7 @@ const Homepage = () => (
   <Layout>
     <Hero />
     <Categories />
-    <div className=" bg-[#E3E6E6]">
+    <div className=" bg-[#E3E6E6] -mt-6">
 
       <ForYou/>
     </div>

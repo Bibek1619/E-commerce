@@ -2,12 +2,12 @@ import React, { useState } from "react";
 import {
   Search,
   ShoppingCart,
-  Menu,
+  
   User,
-  Heart,
-  X,
+ 
+  
   MapPin,
-  Bold,
+ 
 } from "lucide-react";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
@@ -19,11 +19,15 @@ import {
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
 import { Link } from "react-router-dom";
+import { useCart } from "../providers/cart-provider";
 
 const Header = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [user, setUser] = useState(null); // Replace with context later
-  const cartCount = 0; // Replace with cart context
+ 
+  const { items } = useCart();
+const cartCount = items.length;
+
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const handleLogout = () => setUser(null);
   const handleSearch = (e) => {
@@ -38,6 +42,8 @@ const Header = () => {
     "Herbs",
     "Electronics",
   ];
+
+  // Replace with actual cart count from context or state
 
   return (
     <header className="bg-gray-900 text-white sticky top-0 z-50">
