@@ -66,7 +66,7 @@ const cartCount = items.length;
       </div>
 
       {/* Main Header */}
-      <div className="w-full px-4 py-2 flex items-center">
+      <div className="w-full px-4 py-4 flex items-center">
   {/* Logo */}
   <Link
   to="/"
@@ -87,7 +87,8 @@ const cartCount = items.length;
   className="relative hover:bg-amber-500 w-11 h-11"
 >
   <Link to="/cart">
-    <ShoppingCart className="h-7 w-7" />
+   <ShoppingCart style={{ width: "28px", height: "28px" }} className="text-white" />
+
     {cartCount > 0 && (
       <Badge className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center text-xs bg-red-600">
         {cartCount}
@@ -102,22 +103,23 @@ const cartCount = items.length;
       <DropdownMenuTrigger asChild>
         <Button
           variant="link"
-          size="icon"
+          
+          
           aria-label="User menu"
-          className="hover:bg-amber-500 cursor-pointer"
+          className="hover:bg-amber-500 cursor-pointer w-11 h-11"
         >
-          <User className="h-9 w-9" />
+          <User style={{height:"28px", width:"28px"}} />
         </Button>
       </DropdownMenuTrigger>
 
       <DropdownMenuContent align="end" className="w-48 bg-white">
         <DropdownMenuItem asChild>
-          <Link to="/auth/signin" className="block w-full ">
+          <Link to="/auth/signin" className="block w-full  hover:bg-amber-500 cursor-pointer">
             Sign In
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
-          <Link to="/auth/signup" className="block w-full">
+          <Link to="/auth/signup" className="block w-full  hover:bg-amber-500 cursor-pointer">
             Sign Up
           </Link>
         </DropdownMenuItem>
