@@ -5,6 +5,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const connectDB = require("./config/db");
+const authRoutes = require("./routes/authRoutes");
 
 const app = express();
 
@@ -23,6 +24,9 @@ connectDB();
 app.use(express.json());
 
 // Define your routes here (if any)
+
+app.use('/api/auth',authRoutes);
+
 
 // Start the server
 const PORT = process.env.PORT || 5000;
