@@ -12,6 +12,8 @@ import {
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Badge } from "../ui/badge";
+import UserDropdown from "./UserDropdown"; // adjust path as needed
+
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -98,33 +100,9 @@ const cartCount = items.length;
 </Button>
 
 
+<UserDropdown />
 
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button
-          variant="link"
-          
-          
-          aria-label="User menu"
-          className="hover:bg-amber-500 cursor-pointer w-11 h-11"
-        >
-          <User style={{height:"28px", width:"28px"}} />
-        </Button>
-      </DropdownMenuTrigger>
-
-      <DropdownMenuContent align="end" className="w-48 bg-white">
-        <DropdownMenuItem asChild>
-          <Link to="/auth/signin" className="block w-full  hover:bg-amber-500 cursor-pointer">
-            Sign In
-          </Link>
-        </DropdownMenuItem>
-        <DropdownMenuItem asChild>
-          <Link to="/auth/signup" className="block w-full  hover:bg-amber-500 cursor-pointer">
-            Sign Up
-          </Link>
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
+   
   </div>
 </div>
 

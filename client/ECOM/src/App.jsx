@@ -18,7 +18,7 @@ const App = () => {
             <Route path="/" element={<Homepage />} />
             <Route path="/cart" element={<CartPage />} />
             <Route path="/auth/SignUp" element={<SignUp />} />
-            <Route path="/auth/Login" element={<Login />} />
+            <Route path="/auth/signin" element={<Login />} />
             <Route path="/auth/verification" element={<Verification />} />
             {/* Add more routes as needed */}
           </Routes>
