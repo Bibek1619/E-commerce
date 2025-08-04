@@ -1,18 +1,21 @@
-// components/UserDropdown.jsx
-import React from "react";
+import React, { useState } from "react"; // ✅ Make sure React is imported
 import { Link } from "react-router-dom";
 import { User } from "lucide-react";
 import { Button } from "../ui/button";
+
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
-import { useUser } from "../providers/userProvider"; // Ensure this hook returns user & clearUser
 
+import { useUser } from "../providers/userProvider"; // ✅ make sure this is a custom hook
+
+// ✅ make sure hook is only used inside the component
 const UserDropdown = () => {
-  const { user, clearUser } = useUser();
+  const { user, clearUser } = useUser(); // ✅ must be inside the component
+  const [openAuthModal, setOpenAuthModal] = useState(false);
 
   if (!user) {
     return (

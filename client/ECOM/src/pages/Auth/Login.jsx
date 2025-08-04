@@ -18,33 +18,39 @@ const Login = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({ email: "", password: "" });
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setIsLoading(true);
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  setIsLoading(true);
 
-    try {
-      const response = await axiosInstance.post(API_PATHS.AUTH.LOGIN, formData);
-      const { token } = response.data;
+  try {
+    const response = await axiosInstance.post(API_PATHS.AUTH.LOGIN, formData);
 
-      if (token) {
-        localStorage.setItem("token", token);
-        await refreshUser(); 
-        console.log(token)// ✅ fetch user data
-        toast.success("Signed in successfully!");
-        navigate("/");
-
-      }
-    } catch (error) {
-      console.error("Login Error:", error);
-      if (error.response?.data?.message) {
-        toast.error(error.response.data.message);
-      } else {
-        toast.error("Something went wrong. Please try again.");
-      }
-    } finally {
-      setIsLoading(false);
+    if (response.status !== 200 || !response.data.token) {
+      toast.error("Login failed. Please check your credentials.");
+      return;
     }
-  };
+
+    const { token } = response.data;
+    localStorage.setItem("token", token);
+
+    await refreshUser();
+    toast.success("Signed in successfully!");
+    navigate("/"); // ✅ only after successful login
+
+  } catch (error) {
+    console.error("Login error:", error);
+    localStorage.removeItem("token");
+
+    if (error.response?.status === 401) {
+      toast.error("Invalid email or password.");
+    } else {
+      toast.error("Something went wrong. Please try again.");
+    }
+
+  } finally {
+    setIsLoading(false);
+  }
+};
 
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4">

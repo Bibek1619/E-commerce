@@ -1,4 +1,4 @@
-import React, { createContext, useState, useEffect } from "react";
+import React, { createContext, useState, useEffect, useContext } from "react";
 import axiosInstance from "../../utils/axiosInstance";
 import { API_PATHS } from "../../utils/apiPaths";
 
@@ -8,7 +8,6 @@ const UserProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Automatically fetch user on first mount if token exists
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) {
@@ -18,7 +17,6 @@ const UserProvider = ({ children }) => {
     refreshUser();
   }, []);
 
-  // Called after login or when token exists
   const refreshUser = async () => {
     setLoading(true);
     try {
@@ -53,3 +51,12 @@ const UserProvider = ({ children }) => {
 };
 
 export default UserProvider;
+
+// ✅ Export hook
+export const useUser = () => {
+  const context = useContext(UserContext);
+  if (!context) {
+    throw new Error("useUser must be used within a UserProvider");
+  }
+  return context;
+};
