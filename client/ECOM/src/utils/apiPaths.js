@@ -7,4 +7,10 @@ export const API_PATHS ={
         GET_PROFILE: "/api/auth/profile",
        
     },
+     CART: {
+    GET: "/api/cart",
+    ADD: "/api/cart/add",
+    UPDATE: "/api/cart/update",
+    REMOVE: (productId) => `/api/cart/remove/${productId}`, // dynamic route
+  },
 };
