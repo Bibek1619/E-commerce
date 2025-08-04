@@ -1,25 +1,43 @@
-const mongoose =require('mongoose');
-const userSchema =new mongoose.Schema({
-    name:{
-        type:String,
-        required:true,
+const mongoose = require('mongoose');
 
+const userSchema = new mongoose.Schema(
+  {
+    name: {
+      type: String,
+      required: true,
     },
-    email:{
-        type:String,
-        required:true,
-        unique:true,
 
+    email: {
+      type: String,
+      required: true,
+      unique: true,
     },
-    password:{
-        type:String,
-        required:true,
 
-    }
-},
-{
-    timestamps:true,});
+    password: {
+      type: String,
+      required: true,
+    },
 
-    module.exports=mongoose.model('User',
-        userSchema
-    );
+    // ✅ cart is defined here INSIDE the schema definition
+    cart: [
+      {
+        productId: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: 'Product',
+          required: true,
+        },
+        quantity: {
+          type: Number,
+          required: true,
+          default: 1,
+        },
+      },
+    ],
+  },
+  {
+    timestamps: true, // ✅ options go here, as the 2nd argument
+  }
+);
+
+// ✅ Export model
+module.exports = mongoose.model('User', userSchema);
