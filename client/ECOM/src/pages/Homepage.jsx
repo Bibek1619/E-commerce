@@ -11,7 +11,7 @@ const Homepage = () => (
 
       <ForYou/>
     </div>
-    {/* Add other components like FeaturedProducts, Testimonials, etc. here */}
+   
   </Layout>
 );
 
