@@ -4,7 +4,7 @@ import {
   addToCart,
   updateCartItem,
   removeCartItem,
-} from "@/api/cart"; // make sure these are correctly imported
+} from "../../api/cartApi"; // make sure these are correctly imported
 
 const CartContext = createContext();
 

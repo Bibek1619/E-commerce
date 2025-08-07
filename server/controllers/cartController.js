@@ -99,10 +99,12 @@ const removeFromCart = async (req, res) => {
     );
 
     await user.save();
-
     await user.populate("cart.productId");
+
+    // ✅ Return updated cart only (or success message, not both)
     res.json(formatCart(user.cart));
   } catch (err) {
+    console.error("❌ Error in removeFromCart:", err);
     res.status(500).json({ message: "Failed to remove item from cart" });
   }
 };

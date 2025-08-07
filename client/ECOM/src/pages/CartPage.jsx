@@ -1,4 +1,4 @@
-import { useCart } from "@/contexts/CartProvider";
+import { useCart } from ".././components/providers/cart-provider";
 
 const CartPage = () => {
   const { items, loading, updateQuantity, removeItem, getTotalPrice } = useCart();
@@ -43,3 +43,4 @@ const CartPage = () => {
     </div>
   );
 };
+export default CartPage;

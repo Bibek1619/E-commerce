@@ -1,5 +1,5 @@
-import axiosInstance from "./axiosInstance";
-import { API_PATHS } from "./apiPaths";
+import axiosInstance from "../utils/axiosInstance";
+import { API_PATHS } from "../utils/apiPaths";
 
 // 🔹 Get Cart Items
 export const getCart = async () => {
