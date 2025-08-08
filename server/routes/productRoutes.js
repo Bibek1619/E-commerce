@@ -5,23 +5,24 @@ const {
   getProductById,
   updateProduct,
   deleteProduct,
-  getProductsByCategory, 
-
+  getProductsByCategory,
+  getCategories
 } = require("../controllers/productController");
 
 const { protect } = require("../middlewares/authMiddleware");
+const upload = require("../middlewares/multers");
 
 const router = express.Router();
 
 // 📌 Public Routes
-router.get("/", getProducts);                         // Get all products
-router.get("/category/:category", getProductsByCategory); // Get by category
-          // ✅ Get all unique categories
-router.get("/:id", getProductById);                   // Get product by ID
+router.get("/", getProducts);
+router.get("/category/:category", getProductsByCategory);
+router.get("/categories", getCategories);
+router.get("/:id", getProductById);
 
 // 📌 Protected Routes
-router.post("/", protect, createProduct);             // Create product
-router.put("/:id", protect, updateProduct);           // Update product
-router.delete("/:id", protect, deleteProduct);        // Delete product
+router.post("/", protect, upload.array("images", 5), createProduct);
+router.put("/:id", protect, upload.array("images", 5), updateProduct);
+router.delete("/:id", protect, deleteProduct);
 
 module.exports = router;
