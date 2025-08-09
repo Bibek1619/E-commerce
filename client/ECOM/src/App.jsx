@@ -6,7 +6,8 @@ import SignUp from './pages/Auth/SignUp';
 import Login from './pages/Auth/Login';
 import Verification from './pages/Auth/Verification';
 import { Toaster } from 'react-hot-toast';
-import AppProviders from './AppProviders'; // ✅ Corrected impor
+import AppProviders from './AppProviders';
+import Layout from './components/layout/Layout'; // import Layout
 
 const App = () => {
   return (
@@ -16,7 +17,14 @@ const App = () => {
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Homepage />} />
-            <Route path="/cart" element={<CartPage />} />
+            <Route 
+              path="/cart" 
+              element={
+                <Layout>
+                  <CartPage />
+                </Layout>
+              } 
+            />
             <Route path="/auth/SignUp" element={<SignUp />} />
             <Route path="/auth/signin" element={<Login />} />
             <Route path="/auth/verification" element={<Verification />} />
