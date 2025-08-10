@@ -18,7 +18,32 @@ const userSchema = new mongoose.Schema(
       required: true,
     },
 
-    // ✅ cart is defined here INSIDE the schema definition
+    role: {
+      type: String,
+      enum: ['user', 'seller', 'admin'],
+      default: 'user',
+    },
+
+    isApprovedSeller: {
+      type: Boolean,
+      default: false, // admin will set this to true when approving
+    },
+
+    shopName: {
+      type: String,
+      required: function () {
+        return this.role === 'seller';
+      },
+    },
+
+    shopDescription: {
+      type: String,
+    },
+
+    shopLogo: {
+      type: String, // URL of uploaded logo
+    },
+
     cart: [
       {
         productId: {
@@ -35,9 +60,8 @@ const userSchema = new mongoose.Schema(
     ],
   },
   {
-    timestamps: true, // ✅ options go here, as the 2nd argument
+    timestamps: true,
   }
 );
 
-// ✅ Export model
 module.exports = mongoose.model('User', userSchema);
