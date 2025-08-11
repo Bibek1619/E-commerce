@@ -57,7 +57,7 @@ const cartCount = items.length;
             <span>Deliver to Nepal</span>
           </div>
           <div className="flex items-center gap-4">
-            <Link to="/seller/register" className="hover:text-orange-400">
+            <Link to="/register?role=seller" className="hover:text-orange-400">
               Sell on NepaliBazar
             </Link>
             <Link to="/help" className="hover:text-orange-400">

@@ -10,7 +10,7 @@ import {
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
 
-import { useUser } from "../providers/userProvider"; // ✅ make sure this is a custom hook
+import { useUser } from "../providers/userProvider"; // 
 
 // ✅ make sure hook is only used inside the component
 const UserDropdown = () => {
