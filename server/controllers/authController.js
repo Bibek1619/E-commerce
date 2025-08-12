@@ -11,25 +11,41 @@ const generateToken =(userId)=>{
 };
 const registerUser = async (req, res) => {
   try {
-    const { name, email, password, } = req.body;
+    const { name, email, password, shopName, shopDescription, shopLogo } = req.body;
+    let role = 'user';
+
+    if (req.query.role === 'seller' || req.body.role === 'seller') {
+      role = 'seller';
+    }
 
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       return res.status(400).json({ message: 'User already exists' });
     }
+
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const user = await User.create({
+    const userData = {
       name,
       email,
       password: hashedPassword,
-      
-    });
+      role,
+    };
+
+    if (role === 'seller') {
+      userData.shopName = shopName;
+      userData.shopDescription = shopDescription;
+      userData.shopLogo = shopLogo;
+    }
+
+    const user = await User.create(userData);
+
     res.status(201).json({
       _id: user._id,
       name: user.name,
       email: user.email,
-      
+      role: user.role,
+      isApprovedSeller: user.isApprovedSeller,
       token: generateToken(user._id),
     });
   } catch (error) {
@@ -37,6 +53,7 @@ const registerUser = async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 };
+
 
 const loginUser = async (req, res) => {
   try {
