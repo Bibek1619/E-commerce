@@ -67,7 +67,7 @@ const SignUp = () => {
 
       if (token) {
         localStorage.setItem("token", token);
-        updateUser(user); // Assuming user is sent separately
+        updateUser(user); // Assuming user is sent separatel
         toast.success("Account created successfully!");
         navigate("/");
       }
