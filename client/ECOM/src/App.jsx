@@ -2,13 +2,13 @@ import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Homepage from './pages/Homepage';
 import CartPage from './pages/CartPage';
-import SignUp from './pages/Auth/SignUp';
-import Login from './pages/Auth/Login';
+import SignUp from './pages/Auth/user/SignUp';
+import Login from './pages/Auth/user/Login';
 import Verification from './pages/Auth/Verification';
 import { Toaster } from 'react-hot-toast';
 import AppProviders from './AppProviders';
 import Layout from './components/layout/Layout'; // import Layout
-import SellerReg from './pages/Auth/SellerReg';
+import SellerReg from './pages/Auth/seller/SellerReg';
 
 const App = () => {
   return (

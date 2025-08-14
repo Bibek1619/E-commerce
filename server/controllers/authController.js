@@ -11,16 +11,22 @@ const generateToken =(userId)=>{
 };
 const registerUser = async (req, res) => {
   try {
-    const { name, email, password, shopName, shopDescription, shopLogo } = req.body;
-    let role = 'user';
+    const { name, email, password, shopName, shopDescription } = req.body;
+    let role = "user";
 
-    if (req.query.role === 'seller' || req.body.role === 'seller') {
-      role = 'seller';
+    if (req.query.role === "seller" || req.body.role === "seller") {
+      role = "seller";
+    }
+
+    // If seller, save uploaded logo path
+    let shopLogo = null;
+    if (req.file) {
+      shopLogo = `/uploads/${req.file.filename}`;
     }
 
     const existingUser = await User.findOne({ email });
     if (existingUser) {
-      return res.status(400).json({ message: 'User already exists' });
+      return res.status(400).json({ message: "User already exists" });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -32,7 +38,7 @@ const registerUser = async (req, res) => {
       role,
     };
 
-    if (role === 'seller') {
+    if (role === "seller") {
       userData.shopName = shopName;
       userData.shopDescription = shopDescription;
       userData.shopLogo = shopLogo;
@@ -46,13 +52,15 @@ const registerUser = async (req, res) => {
       email: user.email,
       role: user.role,
       isApprovedSeller: user.isApprovedSeller,
+      shopLogo: user.shopLogo,
       token: generateToken(user._id),
     });
   } catch (error) {
-    console.error('Error in registerUser:', error.message);
-    res.status(500).json({ message: 'Server error' });
+    console.error("Error in registerUser:", error.message);
+    res.status(500).json({ message: "Server error" });
   }
 };
+
 
 
 const loginUser = async (req, res) => {
