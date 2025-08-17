@@ -1,9 +1,11 @@
 import React, { useState } from "react";
 import axiosInstance from "../../../utils/axiosInstance"; // adjust path to your axiosInstance
-import { API_PATHS } from "../../../utils/apiPaths"; // optional if you want to use constants
+import { API_PATHS } from "../../../utils/apiPaths"; 
 import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 
 const SellerReg = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -16,7 +18,6 @@ const SellerReg = () => {
 
   const [loading, setLoading] = useState(false);
 
-  // Handle input change
   const handleChange = (e) => {
     const { name, value, files } = e.target;
     if (files) {
@@ -26,7 +27,6 @@ const SellerReg = () => {
     }
   };
 
-  // Submit form
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -37,8 +37,6 @@ const SellerReg = () => {
 
     try {
       setLoading(true);
-
-      // Using FormData for file upload
       const payload = new FormData();
       payload.append("name", formData.name);
       payload.append("email", formData.email);
@@ -50,18 +48,15 @@ const SellerReg = () => {
         payload.append("shopPhoto", formData.shopPhoto);
       }
 
-      // Send request with role in query params
       const res = await axiosInstance.post(
         `${API_PATHS.AUTH.REGISTER}?role=seller`,
         payload,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
+        { headers: { "Content-Type": "multipart/form-data" } }
       );
 
       toast.success(res.data.message || "Seller registered successfully!");
+
+      // reset form
       setFormData({
         name: "",
         email: "",
@@ -71,11 +66,12 @@ const SellerReg = () => {
         shopDescription: "",
         shopPhoto: null,
       });
+
+      // navigate to seller dashboard
+      navigate("/seller/dashboard");
     } catch (error) {
       console.error(error);
-      toast.error(
-        error.response?.data?.message || "Failed to register as seller"
-      );
+      toast.error(error.response?.data?.message || "Failed to register as seller");
     } finally {
       setLoading(false);
     }

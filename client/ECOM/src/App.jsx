@@ -9,6 +9,7 @@ import { Toaster } from 'react-hot-toast';
 import AppProviders from './AppProviders';
 import Layout from './components/layout/Layout'; // import Layout
 import SellerReg from './pages/Auth/seller/SellerReg';
+import SellerLog from './pages/Auth/seller/SellerLog';
 
 const App = () => {
   return (
@@ -31,6 +32,8 @@ const App = () => {
             <Route path="/auth/verification" element={<Verification />} />
             {/* Add more routes as needed */}
              <Route path='/register' element={<SellerReg/>}/>
+             <Route path='/SignUp' element={<SellerLog/>}/>
+
           </Routes>
          
         </BrowserRouter>
