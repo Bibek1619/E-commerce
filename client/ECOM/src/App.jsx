@@ -10,6 +10,7 @@ import AppProviders from './AppProviders';
 import Layout from './components/layout/Layout'; // import Layout
 import SellerReg from './pages/Auth/seller/SellerReg';
 import SellerLog from './pages/Auth/seller/SellerLog';
+import SellerDashboard from './pages/seller/Dashboard';
 
 const App = () => {
   return (
@@ -33,6 +34,8 @@ const App = () => {
             {/* Add more routes as needed */}
              <Route path='/register' element={<SellerReg/>}/>
              <Route path='/SignUp' element={<SellerLog/>}/>
+             <Route path='/seller/dashboard'element={<SellerDashboard/>}/>
+
 
           </Routes>
          

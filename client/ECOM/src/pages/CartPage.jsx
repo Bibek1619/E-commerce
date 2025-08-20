@@ -66,7 +66,7 @@ export default function CartPage() {
   if (items.length === 0) {
     return (
       <div className="min-h-screen bg-gray-50 flex flex-col">
-        <Header />
+     
         <main className="container mx-auto px-4 py-16 flex-grow text-center">
           <ShoppingBag className="h-24 w-24 mx-auto text-gray-400 mb-4" />
           <h1 className="text-2xl font-bold mb-4">Your cart is empty</h1>
