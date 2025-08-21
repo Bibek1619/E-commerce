@@ -8,12 +8,12 @@ const productSchema = new mongoose.Schema({
   stock: { type: Number, default: 0 },
   category: { type: [String], required: true }, // multiple categories
   brand: String,
-  seller: String,
+  seller: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true }, // link to seller
   images: [String], // store multiple image URLs or file paths
   ratings: { type: Number, default: 0 },
   reviews: [
     {
-      user: String,
+      user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
       comment: String,
       rating: Number,
       date: { type: Date, default: Date.now }

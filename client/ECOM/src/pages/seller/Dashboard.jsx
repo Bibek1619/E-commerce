@@ -1,4 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useUser } from "../../components/providers/userProvider";
+import axios from "axios";
+
 import { Button } from "../../components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../../components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../components/ui/tabs";
@@ -22,9 +25,6 @@ import {
   Settings,
   ShoppingBag,
   TrendingUp,
-  CheckCircle,
-  XCircle,
-  Clock,
   Edit,
   Eye,
   LogOut,
@@ -32,157 +32,112 @@ import {
 } from "lucide-react";
 import ProductForm from "./components/ProductForm";
 import AnalyticsCharts from "./components/AnalyticsChart";
-import {  useNavigate } from "react-router-dom";
-import UserProvider from "@/components/providers/userProvider";
-
-
-// Dummy seller data
-
-
-// Mock products
-const mockProducts = [
-  {
-    id: "1",
-    sellerId: "seller1",
-    name: "Traditional Nepali Dhaka Topi",
-    description: "Authentic handmade Dhaka topi from Palpa",
-    price: 1500,
-    discountPrice: 1200,
-    photos: ["/placeholder.svg"],
-    tags: ["traditional", "handmade", "nepali", "topi"],
-    category: "Clothing",
-    stock: 25,
-    approvalStatus: "approved",
-  },
-  {
-    id: "2",
-    sellerId: "seller1",
-    name: "Himalayan Honey",
-    description: "Pure organic honey from the Himalayas",
-    price: 800,
-    photos: ["/placeholder.svg"],
-    tags: ["organic", "honey", "himalayan", "natural"],
-    category: "Food",
-    stock: 50,
-    approvalStatus: "pending",
-  },
-  {
-    id: "3",
-    sellerId: "seller1",
-    name: "Khukuri Knife",
-    description: "Traditional Nepali khukuri knife with leather sheath",
-    price: 3500,
-    discountPrice: 3000,
-    photos: ["/placeholder.svg"],
-    tags: ["traditional", "knife", "khukuri", "handmade"],
-    category: "Crafts",
-    stock: 10,
-    approvalStatus: "rejected",
-  },
-];
-
-// Mock sales data
-const mockSalesData = {
-  totalSales: 156,
-  totalRevenue: 234500,
-  monthlyRevenue: [15000, 18000, 22000, 25000, 28000, 32000],
-  topProducts: [
-    { productId: "1", name: "Traditional Nepali Dhaka Topi", sales: 45, revenue: 54000 },
-    { productId: "2", name: "Himalayan Honey", sales: 32, revenue: 25600 },
-    { productId: "3", name: "Khukuri Knife", sales: 18, revenue: 54000 },
-  ],
-};
-
-const formatDate = (date) => {
-  return date ? new Date(date).toLocaleDateString() : "N/A";
-};
+import { useNavigate } from "react-router-dom";
+import { BASE_URL, API_PATHS } from "../../utils/apiPaths";
 
 export default function SellerDashboard() {
- 
   const { user: seller, loading } = useUser();
-  
+  const navigate = useNavigate();
 
-  const [products, setProducts] = useState(mockProducts);
-  const [salesData] = useState(mockSalesData);
+  const [products, setProducts] = useState([]);
+  const [salesData, setSalesData] = useState({
+    totalSales: 0,
+    totalRevenue: 0,
+    monthlyRevenue: [],
+    topProducts: [],
+  });
   const [showProductForm, setShowProductForm] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
   const [deleteProduct, setDeleteProduct] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-  const Navigate=useNavigate()
-   if (loading) {
-  return <div className="flex items-center justify-center min-h-screen">Loading...</div>;
-}
 
-// Optional: prevent dashboard rendering if not a seller
-if (!seller || seller.role !== "seller") {
-  return <div className="flex items-center justify-center min-h-screen">Access Denied</div>;
-}
-
-  const handleLogout = () => {
-    alert("Dummy logout clicked");
-    Navigate("/")
-  };
-
-  const getStatusBadge = (status) => {
-    switch (status) {
-      case "approved":
-        return (
-          <Badge className="bg-green-100 text-green-800">
-            <CheckCircle className="w-3 h-3 mr-1" />
-            Approved
-          </Badge>
-        );
-      case "pending":
-        return (
-          <Badge className="bg-yellow-100 text-yellow-800">
-            <Clock className="w-3 h-3 mr-1" />
-            Pending
-          </Badge>
-        );
-      case "rejected":
-        return (
-          <Badge className="bg-red-100 text-red-800">
-            <XCircle className="w-3 h-3 mr-1" />
-            Rejected
-          </Badge>
-        );
-      default:
-        return null;
+  // Fetch seller's products
+  const fetchProducts = async () => {
+    try {
+      setIsLoading(true);
+      const { data } = await axios.get(`${BASE_URL}${API_PATHS.PRODUCT.GET_MY_PRODUCTS}`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+      });
+      setProducts(data);
+      setIsLoading(false);
+    } catch (err) {
+      console.error("Error fetching products:", err);
+      setIsLoading(false);
     }
   };
 
-  const handleAddProduct = (productData) => {
-    setIsLoading(true);
-    setTimeout(() => {
-      const newProduct = {
-        id: Date.now().toString(),
-        sellerId: seller.id,
-        ...productData,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      };
-      setProducts((prev) => [newProduct, ...prev]);
+  useEffect(() => {
+    if (!loading && seller?.role === "seller") {
+      fetchProducts();
+    }
+  }, [loading, seller]);
+
+  if (loading) return <div className="flex items-center justify-center min-h-screen">Loading...</div>;
+  if (!seller || seller.role !== "seller") return <div className="flex items-center justify-center min-h-screen">Access Denied</div>;
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    navigate("/");
+  };
+
+  const handleAddProduct = async (productData) => {
+    try {
+      setIsLoading(true);
+      const formData = new FormData();
+      for (const key in productData) {
+        if (key === "images") {
+          productData.images.forEach((file) => formData.append("images", file));
+        } else {
+          formData.append(key, productData[key]);
+        }
+      }
+      const { data } = await axios.post(`${BASE_URL}${API_PATHS.PRODUCT.CREATE}`, formData, {
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+      });
+      setProducts((prev) => [data, ...prev]);
       setShowProductForm(false);
       setIsLoading(false);
-    }, 1000);
+    } catch (err) {
+      console.error("Error adding product:", err);
+      setIsLoading(false);
+    }
   };
 
-  const handleEditProduct = (productData) => {
+  const handleEditProduct = async (productData) => {
     if (!editingProduct) return;
-    setIsLoading(true);
-    setTimeout(() => {
-      setProducts((prev) =>
-        prev.map((p) => (p.id === editingProduct.id ? { ...p, ...productData, updatedAt: new Date() } : p))
-      );
+    try {
+      setIsLoading(true);
+      const formData = new FormData();
+      for (const key in productData) {
+        if (key === "images") {
+          productData.images.forEach((file) => formData.append("images", file));
+        } else {
+          formData.append(key, productData[key]);
+        }
+      }
+      const { data } = await axios.put(`${BASE_URL}${API_PATHS.PRODUCT.UPDATE(editingProduct._id)}`, formData, {
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+      });
+      setProducts((prev) => prev.map((p) => (p._id === data._id ? data : p)));
       setEditingProduct(null);
       setIsLoading(false);
-    }, 1000);
+    } catch (err) {
+      console.error("Error updating product:", err);
+      setIsLoading(false);
+    }
   };
 
-  const handleDeleteProduct = () => {
+  const handleDeleteProduct = async () => {
     if (!deleteProduct) return;
-    setProducts((prev) => prev.filter((p) => p.id !== deleteProduct.id));
-    setDeleteProduct(null);
+    try {
+      await axios.delete(`${BASE_URL}${API_PATHS.PRODUCT.DELETE(deleteProduct._id)}`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+      });
+      setProducts((prev) => prev.filter((p) => p._id !== deleteProduct._id));
+      setDeleteProduct(null);
+    } catch (err) {
+      console.error("Error deleting product:", err);
+    }
   };
 
   const openEditForm = (product) => setEditingProduct(product);
@@ -212,18 +167,14 @@ if (!seller || seller.role !== "seller") {
               </div>
             </div>
             <Button variant="ghost" size="sm" onClick={handleLogout}>
-              <LogOut className="h-4 w-4 mr-2" />
-              Logout
+              <LogOut className="h-4 w-4 mr-2" /> Logout
             </Button>
           </div>
         </div>
       </header>
 
-      {/* Rest of the dashboard (Products, Analytics, Profile) */}
-      {/* You can copy all the remaining JSX from the previous version */}
-       {/* Content */}
       <div className="container mx-auto px-4 py-8">
-        {/* Quick Stats */}
+        {/* Stats */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
           <Card>
             <CardContent className="p-6 flex justify-between items-center">
@@ -234,41 +185,10 @@ if (!seller || seller.role !== "seller") {
               <Package className="h-8 w-8 text-orange-600" />
             </CardContent>
           </Card>
-
-          <Card>
-            <CardContent className="p-6 flex justify-between items-center">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Total Sales</p>
-                <p className="text-2xl font-bold text-gray-900">{salesData.totalSales}</p>
-              </div>
-              <TrendingUp className="h-8 w-8 text-green-600" />
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent className="p-6 flex justify-between items-center">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Revenue</p>
-                <p className="text-2xl font-bold text-gray-900">Rs. {salesData.totalRevenue.toLocaleString()}</p>
-              </div>
-              <BarChart3 className="h-8 w-8 text-blue-600" />
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent className="p-6 flex justify-between items-center">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Approved Products</p>
-                <p className="text-2xl font-bold text-gray-900">
-                  {products.filter((p) => p.approvalStatus === "approved").length}
-                </p>
-              </div>
-              <CheckCircle className="h-8 w-8 text-green-600" />
-            </CardContent>
-          </Card>
+          {/* Add more stats if needed */}
         </div>
 
-        {/* Tabs (Products / Add / Analytics / Profile) */}
+        {/* Tabs */}
         <Tabs defaultValue="products" className="space-y-6">
           <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="products">Products</TabsTrigger>
@@ -278,12 +198,11 @@ if (!seller || seller.role !== "seller") {
           </TabsList>
 
           <TabsContent value="products">
-            {/* Products List */}
             <Card>
               <CardHeader className="flex justify-between items-center">
                 <div>
                   <CardTitle>Your Products</CardTitle>
-                  <CardDescription>Manage your product listings and track approval status</CardDescription>
+                  <CardDescription>Manage your product listings</CardDescription>
                 </div>
                 <Button className="bg-orange-600 hover:bg-orange-700" onClick={() => setShowProductForm(true)}>
                   <Plus className="h-4 w-4 mr-2" /> Add Product
@@ -292,9 +211,9 @@ if (!seller || seller.role !== "seller") {
               <CardContent>
                 <div className="space-y-4">
                   {products.map((product) => (
-                    <div key={product.id} className="flex items-center gap-4 p-4 border rounded-lg">
+                    <div key={product._id} className="flex items-center gap-4 p-4 border rounded-lg">
                       <img
-                        src={product.photos[0] || "/placeholder.svg"}
+                        src={product.images[0] || "/placeholder.svg"}
                         alt={product.name}
                         className="w-16 h-16 object-cover rounded-md"
                       />
@@ -303,26 +222,13 @@ if (!seller || seller.role !== "seller") {
                         <p className="text-sm text-gray-600">{product.description}</p>
                         <div className="flex items-center gap-2 mt-2">
                           <span className="font-medium text-gray-900">Rs. {product.price}</span>
-                          {product.discountPrice && (
-                            <span className="text-sm text-gray-500 line-through">Rs. {product.discountPrice}</span>
+                          {product.discountedPrice && (
+                            <span className="text-sm text-gray-500 line-through">Rs. {product.discountedPrice}</span>
                           )}
                           <span className="text-sm text-gray-500">• Stock: {product.stock}</span>
                         </div>
-                        <div className="flex flex-wrap gap-1 mt-2">
-                          {product.tags.slice(0, 3).map((tag) => (
-                            <Badge key={tag} variant="outline" className="text-xs">
-                              {tag}
-                            </Badge>
-                          ))}
-                          {product.tags.length > 3 && (
-                            <Badge variant="outline" className="text-xs">
-                              +{product.tags.length - 3} more
-                            </Badge>
-                          )}
-                        </div>
                       </div>
                       <div className="flex items-center gap-2">
-                        {getStatusBadge(product.approvalStatus)}
                         <Button variant="ghost" size="sm">
                           <Eye className="h-4 w-4" />
                         </Button>
@@ -341,7 +247,7 @@ if (!seller || seller.role !== "seller") {
           </TabsContent>
 
           <TabsContent value="add-product">
-            <ProductForm onSubmit={handleAddProduct} onCancel={() => {}} isLoading={isLoading} />
+            <ProductForm onSubmit={handleAddProduct} onCancel={() => setShowProductForm(false)} isLoading={isLoading} />
           </TabsContent>
 
           <TabsContent value="analytics">
@@ -349,60 +255,7 @@ if (!seller || seller.role !== "seller") {
           </TabsContent>
 
           <TabsContent value="profile">
-            <Card>
-              <CardHeader>
-                <CardTitle>Shop Profile</CardTitle>
-                <CardDescription>Manage your shop information and settings</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-6">
-                  <div className="flex items-center gap-4">
-                    <Avatar className="h-20 w-20">
-                      <AvatarImage src={seller.shopPhoto || "/placeholder.svg"} />
-                      <AvatarFallback className="text-lg">{seller.shopName.charAt(0)}</AvatarFallback>
-                    </Avatar>
-                    <div>
-                      <h3 className="text-xl font-semibold">{seller.shopName}</h3>
-                      <p className="text-gray-600">{seller.description}</p>
-                      <div className="flex items-center gap-2 mt-2">
-                        {seller.isApproved ? (
-                          <Badge className="bg-green-100 text-green-800">
-                            <CheckCircle className="w-3 h-3 mr-1" /> Verified Seller
-                          </Badge>
-                        ) : (
-                          <Badge className="bg-yellow-100 text-yellow-800">
-                            <Clock className="w-3 h-3 mr-1" /> Pending Verification
-                          </Badge>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <label className="text-sm font-medium text-gray-700">Owner Name</label>
-                      <p className="mt-1 text-gray-900">{seller.name}</p>
-                    </div>
-                    <div>
-                      <label className="text-sm font-medium text-gray-700">Email</label>
-                      <p className="mt-1 text-gray-900">{seller.email}</p>
-                    </div>
-                    <div>
-                      <label className="text-sm font-medium text-gray-700">Member Since</label>
-                      <p className="mt-1 text-gray-900">{formatDate(seller.createdAt)}</p>
-                    </div>
-                    <div>
-                      <label className="text-sm font-medium text-gray-700">Last Updated</label>
-                      <p className="mt-1 text-gray-900">{formatDate(seller.updatedAt)}</p>
-                    </div>
-                  </div>
-
-                  <Button className="bg-orange-600 hover:bg-orange-700">
-                    <Settings className="h-4 w-4 mr-2" /> Edit Profile
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
+            {/* Profile content */}
           </TabsContent>
         </Tabs>
       </div>
@@ -450,7 +303,5 @@ if (!seller || seller.role !== "seller") {
         </AlertDialogContent>
       </AlertDialog>
     </div>
-
-    
   );
 }

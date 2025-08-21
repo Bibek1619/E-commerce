@@ -1,13 +1,13 @@
 const Product = require("../models/Product");
 
-// 🔹 Create a new product
+// 🔹 Create a new product (directly posted)
 const createProduct = async (req, res) => {
   try {
     const imagePaths = req.files ? req.files.map(file => `/uploads/${file.filename}`) : [];
 
     const product = await Product.create({
       ...req.body,
-      category: req.body.category, // expecting array
+      seller: req.user._id, // automatically link seller
       images: imagePaths
     });
 
@@ -18,10 +18,10 @@ const createProduct = async (req, res) => {
   }
 };
 
-// 🔹 Get all products
+// 🔹 Get all products (public)
 const getProducts = async (req, res) => {
   try {
-    const products = await Product.find();
+    const products = await Product.find().populate("seller", "name email"); // optional: show seller info
     res.json(products);
   } catch (err) {
     console.error("❌ Error fetching products:", err);
@@ -29,10 +29,21 @@ const getProducts = async (req, res) => {
   }
 };
 
+// 🔹 Get products of the logged-in seller
+const getSellerProducts = async (req, res) => {
+  try {
+    const products = await Product.find({ seller: req.user._id });
+    res.json(products);
+  } catch (err) {
+    console.error("❌ Error fetching seller products:", err);
+    res.status(500).json({ message: "Failed to fetch products" });
+  }
+};
+
 // 🔹 Get product by ID
 const getProductById = async (req, res) => {
   try {
-    const product = await Product.findById(req.params.id);
+    const product = await Product.findById(req.params.id).populate("seller", "name email");
     if (!product) return res.status(404).json({ message: "Product not found" });
     res.json(product);
   } catch (err) {
@@ -41,34 +52,29 @@ const getProductById = async (req, res) => {
   }
 };
 
-// 🔹 Update a product
+// 🔹 Update a product (only by seller)
 const updateProduct = async (req, res) => {
   try {
+    const product = await Product.findOne({ _id: req.params.id, seller: req.user._id });
+    if (!product) return res.status(404).json({ message: "Product not found" });
+
     const imagePaths = req.files ? req.files.map(file => `/uploads/${file.filename}`) : [];
+    Object.assign(product, req.body);
+    if (imagePaths.length) product.images = imagePaths;
 
-    const updated = await Product.findByIdAndUpdate(
-      req.params.id,
-      {
-        ...req.body,
-        category: req.body.category || undefined,
-        ...(imagePaths.length && { images: imagePaths }),
-      },
-      { new: true }
-    );
-
-    if (!updated) return res.status(404).json({ message: "Product not found" });
-    res.json(updated);
+    await product.save();
+    res.json(product);
   } catch (err) {
     console.error("❌ Error updating product:", err);
     res.status(500).json({ message: "Failed to update product" });
   }
 };
 
-// 🔹 Delete a product
+// 🔹 Delete a product (only by seller)
 const deleteProduct = async (req, res) => {
   try {
-    const deleted = await Product.findByIdAndDelete(req.params.id);
-    if (!deleted) return res.status(404).json({ message: "Product not found" });
+    const product = await Product.findOneAndDelete({ _id: req.params.id, seller: req.user._id });
+    if (!product) return res.status(404).json({ message: "Product not found" });
     res.json({ message: "Product deleted" });
   } catch (err) {
     console.error("❌ Error deleting product:", err);
@@ -76,7 +82,7 @@ const deleteProduct = async (req, res) => {
   }
 };
 
-// 🔹 Get products by category (supports multiple categories)
+// 🔹 Get products by category (public)
 const getProductsByCategory = async (req, res) => {
   try {
     const categories = req.params.category.includes(",")
@@ -104,6 +110,7 @@ const getCategories = async (req, res) => {
 module.exports = {
   createProduct,
   getProducts,
+  getSellerProducts, // new
   getProductById,
   updateProduct,
   deleteProduct,
