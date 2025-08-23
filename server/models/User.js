@@ -24,10 +24,8 @@ const userSchema = new mongoose.Schema(
       default: 'user',
     },
 
-    isApprovedSeller: {
-      type: Boolean,
-      default: false, // admin will set this to true when approving
-    },
+
+    
 
     shopName: {
       type: String,

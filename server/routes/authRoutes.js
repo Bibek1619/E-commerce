@@ -6,7 +6,7 @@ const { protect } = require('../middlewares/authMiddleware');
 const upload = require('../middlewares/upload'); 
 
 
-router.post('/register', upload.single("shopPhoto"), registerUser);
+router.post('/register', upload.single("file"), registerUser);
 router.post('/login', loginUser);
 router.get('/profile', protect, getUserProfile);
 

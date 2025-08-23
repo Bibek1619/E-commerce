@@ -32,8 +32,8 @@ const App = () => {
             <Route path="/auth/signin" element={<Login />} />
             <Route path="/auth/verification" element={<Verification />} />
             {/* Add more routes as needed */}
-             <Route path='/register' element={<SellerReg/>}/>
-             <Route path='/SignUp' element={<SellerLog/>}/>
+             <Route path='/signup' element={<SellerReg/>}/>
+             <Route path='/Signin' element={<SellerLog/>}/>
              <Route path='/seller/dashboard'element={<SellerDashboard/>}/>
 
 

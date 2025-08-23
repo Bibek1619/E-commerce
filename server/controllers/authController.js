@@ -12,25 +12,29 @@ const generateToken =(userId)=>{
 const registerUser = async (req, res) => {
   try {
     const { name, email, password, shopName, shopDescription } = req.body;
-    let role = "user";
 
+    // Default role is user unless query says seller
+    let role = "user";
     if (req.query.role === "seller" || req.body.role === "seller") {
       role = "seller";
     }
 
-    // If seller, save uploaded logo path
+    // Handle logo upload if seller
     let shopLogo = null;
     if (req.file) {
       shopLogo = `/uploads/${req.file.filename}`;
     }
 
+    // Check if user already exists
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       return res.status(400).json({ message: "User already exists" });
     }
 
+    // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
+    // Build user object
     const userData = {
       name,
       email,
@@ -44,14 +48,17 @@ const registerUser = async (req, res) => {
       userData.shopLogo = shopLogo;
     }
 
+    // Create user
     const user = await User.create(userData);
 
+    // Response (no approval field anymore)
     res.status(201).json({
       _id: user._id,
       name: user.name,
       email: user.email,
       role: user.role,
-      isApprovedSeller: user.isApprovedSeller,
+      shopName: user.shopName,
+      shopDescription: user.shopDescription,
       shopLogo: user.shopLogo,
       token: generateToken(user._id),
     });
@@ -60,6 +67,7 @@ const registerUser = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
+
 
 
 

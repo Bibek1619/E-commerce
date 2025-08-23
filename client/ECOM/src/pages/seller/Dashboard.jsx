@@ -73,7 +73,7 @@ export default function SellerDashboard() {
   }, [loading, seller]);
 
   if (loading) return <div className="flex items-center justify-center min-h-screen">Loading...</div>;
-  if (!seller || seller.role !== "seller") return <div className="flex items-center justify-center min-h-screen">Access Denied</div>;
+
 
   const handleLogout = () => {
     localStorage.removeItem("token");
@@ -189,13 +189,38 @@ export default function SellerDashboard() {
         </div>
 
         {/* Tabs */}
-        <Tabs defaultValue="products" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4">
-            <TabsTrigger value="products">Products</TabsTrigger>
-            <TabsTrigger value="add-product">Add Product</TabsTrigger>
-            <TabsTrigger value="analytics">Analytics</TabsTrigger>
-            <TabsTrigger value="profile">Profile</TabsTrigger>
-          </TabsList>
+       <Tabs defaultValue="products" className="space-y-6">
+  <TabsList className="grid w-full grid-cols-4">
+    <TabsTrigger
+      value="products"
+      className="data-[state=active]:text-orange-400 data-[state=active]:bg-white dark:data-[state=active]:bg-orange-500 dark:data-[state=active]:text-white dark:hover:bg-orange-400 hover:bg-gray-200 dark:hover:text-white   cursor-pointer"
+    >
+      Products
+    </TabsTrigger>
+
+    <TabsTrigger
+      value="add-product"
+      className="data-[state=active]:text-orange-400 data-[state=active]:bg-white dark:data-[state=active]:bg-orange-500 dark:data-[state=active]:text-white dark:hover:bg-orange-400 hover:bg-gray-200 dark:hover:text-white cursor-pointer "
+    >
+      Add Product
+    </TabsTrigger>
+
+    <TabsTrigger
+      value="analytics"
+      className="data-[state=active]:text-orange-400 data-[state=active]:bg-white dark:data-[state=active]:bg-orange-500 dark:data-[state=active]:text-white dark:hover:bg-orange-400 hover:bg-gray-200 dark:hover:text-white cursor-pointer "
+    >
+      Analytics
+    </TabsTrigger>
+
+    <TabsTrigger
+      value="profile"
+      className="data-[state=active]:text-orange-400 data-[state=active]:bg-white dark:data-[state=active]:bg-orange-500 dark:data-[state=active]:text-white dark:hover:bg-orange-400 hover:bg-gray-200 dark:hover:text-white cursor-pointer "
+    >
+      Profile
+    </TabsTrigger>
+  </TabsList>
+
+
 
           <TabsContent value="products">
             <Card>
@@ -204,7 +229,7 @@ export default function SellerDashboard() {
                   <CardTitle>Your Products</CardTitle>
                   <CardDescription>Manage your product listings</CardDescription>
                 </div>
-                <Button className="bg-orange-600 hover:bg-orange-700" onClick={() => setShowProductForm(true)}>
+                <Button className="bg-orange-400 hover:bg-orange-500 cursor-pointer" onClick={() => setShowProductForm(true)}>
                   <Plus className="h-4 w-4 mr-2" /> Add Product
                 </Button>
               </CardHeader>
