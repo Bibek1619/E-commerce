@@ -8,7 +8,7 @@ const Verification = ({ onVerify }) => {
   const inputsRef = useRef([]);
 
   const handleChange = (value, index) => {
-    if (!/^\d*$/.test(value)) return; // Only allow numbers
+    if (!/^\d*$/.test(value)) return; 
 
     const newCode = [...code];
     newCode[index] = value;
