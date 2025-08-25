@@ -13,7 +13,7 @@ import { UserContext } from "@/components/providers/userProvider";
 
 const Login = () => {
   const navigate = useNavigate();
-  const { refreshUser } = useContext(UserContext); // ✅ access refreshUser from context
+  const { refreshUser } = useContext(UserContext); 
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({ email: "", password: "" });
