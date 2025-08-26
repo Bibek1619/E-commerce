@@ -201,7 +201,7 @@ export default function CartPage() {
                   </div>
                 </div>
 
-                {/* Promo Code */}
+              
                 <div className="space-y-2">
                   <input
                     type="text"
