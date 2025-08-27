@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { Minus, Plus, Trash2, ShoppingBag } from "lucide-react";
-import Header from "../components/layout/Header";  // adjust path
-import Footer from "../components/layout/Footer";  // adjust path
+import Header from "../components/layout/Header";
+import Footer from "../components/layout/Footer";
 import { useCart } from "../components/providers/cart-provider";
+import { toast } from "react-hot-toast";
 
 const Button = ({ children, className = "", ...props }) => (
   <button
@@ -28,18 +29,24 @@ const CardContent = ({ children, className = "" }) => (
 const CardTitle = ({ children }) => <>{children}</>;
 
 export default function CartPage() {
-  const { items, loading, updateQuantity, removeItem, getTotalPrice } = useCart();
+  const {
+    items,
+    loading,
+    updateQuantity,
+    removeItem,
+    isLoggedIn,
+  } = useCart();
   const [promoCode, setPromoCode] = useState("");
   const [selectedIds, setSelectedIds] = useState([]);
 
-  const selectedItems = items.filter((item) => selectedIds.includes(item.id));
+  const selectedItems = items.filter((item) => selectedIds.includes(item._id));
   const selectedTotal = selectedItems.reduce(
     (sum, item) => sum + item.price * item.quantity,
     0
   );
 
   const shipping = 150;
-  const tax = selectedTotal * 0.13; // 13% VAT on selected
+  const tax = selectedTotal * 0.13;
   const finalTotal = selectedTotal + shipping + tax;
 
   const toggleSelect = (id) => {
@@ -52,21 +59,21 @@ export default function CartPage() {
     if (selectedIds.length === items.length) {
       setSelectedIds([]);
     } else {
-      setSelectedIds(items.map((item) => item.id));
+      setSelectedIds(items.map((item) => item._id));
     }
   };
 
   const removeSelected = () => {
+    if (!isLoggedIn) return toast.error("Please login to remove items");
     selectedIds.forEach((id) => removeItem(id));
     setSelectedIds([]);
   };
 
   if (loading) return <div>Loading...</div>;
 
-  if (items.length === 0) {
+  if (items.length === 0)
     return (
       <div className="min-h-screen bg-gray-50 flex flex-col">
-     
         <main className="container mx-auto px-4 py-16 flex-grow text-center">
           <ShoppingBag className="h-24 w-24 mx-auto text-gray-400 mb-4" />
           <h1 className="text-2xl font-bold mb-4">Your cart is empty</h1>
@@ -77,11 +84,10 @@ export default function CartPage() {
         </main>
       </div>
     );
-  }
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
-      <Header />
+    
       <main className="container mx-auto px-4 py-8 flex-grow">
         <h1 className="text-3xl font-bold mb-8">Shopping Cart</h1>
 
@@ -117,13 +123,13 @@ export default function CartPage() {
                 <div className="space-y-4">
                   {items.map((item) => (
                     <div
-                      key={item.id}
+                      key={item._id}
                       className="flex flex-col sm:flex-row gap-4 p-4 border rounded-lg items-center"
                     >
                       <input
                         type="checkbox"
-                        checked={selectedIds.includes(item.id)}
-                        onChange={() => toggleSelect(item.id)}
+                        checked={selectedIds.includes(item._id)}
+                        onChange={() => toggleSelect(item._id)}
                         className="h-5 w-5"
                       />
                       <img
@@ -147,7 +153,7 @@ export default function CartPage() {
                           size="sm"
                           className="border border-gray-300"
                           onClick={() =>
-                            updateQuantity(item.id, Math.max(1, item.quantity - 1))
+                            updateQuantity(item._id, Math.max(1, item.quantity - 1))
                           }
                         >
                           <Minus className="h-4 w-4" />
@@ -156,7 +162,9 @@ export default function CartPage() {
                         <Button
                           size="sm"
                           className="border border-gray-300"
-                          onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                          onClick={() =>
+                            updateQuantity(item._id, item.quantity + 1)
+                          }
                         >
                           <Plus className="h-4 w-4" />
                         </Button>
@@ -164,7 +172,7 @@ export default function CartPage() {
                       <Button
                         size="sm"
                         className="text-red-500 hover:text-red-700 border border-red-500 mt-2 sm:mt-0"
-                        onClick={() => removeItem(item.id)}
+                        onClick={() => removeItem(item._id)}
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>
@@ -201,7 +209,6 @@ export default function CartPage() {
                   </div>
                 </div>
 
-              
                 <div className="space-y-2">
                   <input
                     type="text"
@@ -215,15 +222,24 @@ export default function CartPage() {
                   </Button>
                 </div>
 
-                <Button className="w-full bg-orange-400 hover:bg-orange-500 text-white">
-                  <Link to="/checkout">Proceed to Checkout</Link>
+                <Button
+                  className={`w-full text-white ${
+                    isLoggedIn
+                      ? "bg-orange-400 hover:bg-orange-500"
+                      : "bg-gray-400 cursor-not-allowed"
+                  }`}
+                  disabled={!isLoggedIn || selectedItems.length === 0}
+                >
+                  <Link to={isLoggedIn ? "/checkout" : "#"}>
+                    Proceed to Checkout
+                  </Link>
                 </Button>
               </CardContent>
             </Card>
           </div>
         </div>
       </main>
-      <Footer />
+    
     </div>
   );
 }

@@ -1,20 +1,25 @@
 import React, { useState } from "react";
 import { useCart } from "../../components/providers/cart-provider";
+import { toast } from "react-hot-toast"; // ✅ import toast
 
 const CartPopup = ({ product, onClose }) => {
   const { addItem } = useCart();
   const [quantity, setQuantity] = useState(1);
 
   const handleAdd = async () => {
-    await addItem(product, quantity);
-    onClose();
+    try {
+      await addItem(product, quantity);
+      toast.success(`${product.name} added to cart!`); // ✅ show success toast
+      onClose();
+    } catch (err) {
+      toast.error("Failed to add product to cart."); // optional error toast
+    }
   };
 
   return (
     <div
       className="fixed z-50 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2
         bg-white rounded-xl shadow-xl p-6 w-[320px] max-w-full"
-      // stop propagation so clicks inside don’t close popup if you add outside click handler elsewhere
       onClick={(e) => e.stopPropagation()}
     >
       <button
@@ -43,7 +48,9 @@ const CartPopup = ({ product, onClose }) => {
           type="number"
           min="1"
           value={quantity}
-          onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value) || 1))}
+          onChange={(e) =>
+            setQuantity(Math.max(1, parseInt(e.target.value) || 1))
+          }
           className="border border-gray-300 rounded px-3 py-1 w-20 text-center"
         />
       </div>

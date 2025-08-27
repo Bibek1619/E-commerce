@@ -157,15 +157,16 @@ export default function SellerDashboard() {
           </div>
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2">
-              <Avatar className="h-8 w-8">
-                <AvatarImage src={seller.shopPhoto || "/placeholder.svg"} />
-                <AvatarFallback>{seller.name.charAt(0)}</AvatarFallback>
-              </Avatar>
-              <div className="text-sm">
-                <p className="font-medium">{seller.name}</p>
-                <p className="text-gray-500">{seller.shopName}</p>
-              </div>
-            </div>
+  <Avatar className="h-8 w-8">
+    <AvatarImage src={seller?.shopPhoto || "/placeholder.svg"} />
+    <AvatarFallback>{seller?.name ? seller.name.charAt(0) : "S"}</AvatarFallback>
+  </Avatar>
+  <div className="text-sm">
+    <p className="font-medium">{seller?.name || "Loading..."}</p>
+    <p className="text-gray-500">{seller?.shopName || ""}</p>
+  </div>
+</div>
+
             <Button variant="ghost" size="sm" onClick={handleLogout}>
               <LogOut className="h-4 w-4 mr-2" /> Logout
             </Button>

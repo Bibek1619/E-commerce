@@ -155,7 +155,7 @@ const SellerReg = () => {
 
         <p className="mt-4 text-center text-gray-600 text-sm">
           Already have an account?{" "}
-          <Link to="/login" className="text-blue-600 hover:underline">
+          <Link to="/signin" className="text-blue-600 hover:underline">
             Sign in
           </Link>
         </p>

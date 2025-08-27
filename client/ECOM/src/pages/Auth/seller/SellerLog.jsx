@@ -1,10 +1,9 @@
 import React, { useState } from "react";
 import { Eye, EyeOff, Store, Mail, Lock, ArrowRight } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const SellerLog = () => {
-  const navigate = (path) => {
-    console.log("Navigating to: " + path);
-  };
+  const navigate = useNavigate(); // ✅ initialize
 
   const [formData, setFormData] = useState({
     email: "",
@@ -30,15 +29,13 @@ const SellerLog = () => {
       
       alert("Login successful!");
 
-      // Mock token save (in real app, use your actual logic)
-      // localStorage.setItem("token", "mock-token");
-
+      // Reset form
       setFormData({
         email: "",
         password: "",
       });
 
-      navigate("/seller/dashboard");
+      navigate("/seller/dashboard"); // ✅ now it will navigate
     } catch (error) {
       console.error(error);
       alert("Login failed");
@@ -46,6 +43,7 @@ const SellerLog = () => {
       setLoading(false);
     }
   };
+
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-emerald-50 flex items-center justify-center py-12 px-4">
