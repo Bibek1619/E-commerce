@@ -1,18 +1,19 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { getCart, addToCart, updateCartItem, removeCartItem } from "../../api/cartApi";
 import { toast } from "react-hot-toast";
-import { useUser } from "../providers/userProvider"; // <-- import your UserContext hook
+import { useUser } from "../providers/userProvider";
 
 const CartContext = createContext();
 export const useCart = () => useContext(CartContext);
 
 export const CartProvider = ({ children }) => {
-  const { user } = useUser(); // ✅ listen to login state
+  const { user } = useUser();
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const isLoggedIn = !!user; // logged-in state
+  const isLoggedIn = !!user;
 
+  // Fetch cart on login
   useEffect(() => {
     const fetchCart = async () => {
       if (!isLoggedIn) {
@@ -20,30 +21,41 @@ export const CartProvider = ({ children }) => {
         setLoading(false);
         return;
       }
-
       try {
         setLoading(true);
         const data = await getCart();
         setItems(data);
       } catch (err) {
         console.error("Error fetching cart:", err);
-        if (err.response?.status === 401) setItems([]);
+        setItems([]);
       } finally {
         setLoading(false);
       }
     };
-
     fetchCart();
-  }, [isLoggedIn]); // ✅ now re-fetches after login/logout
+  }, [isLoggedIn]);
 
   const addItem = async (product, quantity = 1) => {
-    if (!isLoggedIn) return toast.error("Please login to add products to cart");
+    if (!isLoggedIn) return toast.error("Please login to add products");
+
     try {
-      const updatedCart = await addToCart(product._id, quantity);
-      setItems(updatedCart);
+      await addToCart(product._id, quantity);
+      const existing = items.find((i) => i._id === product._id);
+
+      if (existing) {
+        setItems((prev) =>
+          prev.map((i) =>
+            i._id === product._id
+              ? { ...i, quantity: i.quantity + quantity }
+              : i
+          )
+        );
+      } else {
+        setItems((prev) => [...prev, { ...product, quantity }]);
+      }
     } catch (err) {
       console.error(err);
-      if (err.response?.status === 401) setItems([]);
+      toast.error("Failed to add to cart");
     }
   };
 
@@ -51,29 +63,33 @@ export const CartProvider = ({ children }) => {
     if (!isLoggedIn) return toast.error("Please login to update cart");
     try {
       if (quantity <= 0) return removeItem(productId);
-      const updatedCart = await updateCartItem(productId, quantity);
-      setItems(updatedCart);
+      await updateCartItem(productId, quantity);
+      setItems((prev) =>
+        prev.map((item) =>
+          item._id === productId ? { ...item, quantity } : item
+        )
+      );
     } catch (err) {
       console.error(err);
-      if (err.response?.status === 401) setItems([]);
+      toast.error("Failed to update cart");
     }
   };
 
   const removeItem = async (productId) => {
-    if (!isLoggedIn) return toast.error("Please login to remove items from cart");
+    if (!isLoggedIn) return toast.error("Please login to remove items");
     try {
-      const updatedCart = await removeCartItem(productId);
-      setItems(updatedCart);
+      await removeCartItem(productId);
+      setItems((prev) => prev.filter((item) => item._id !== productId));
     } catch (err) {
       console.error(err);
-      if (err.response?.status === 401) setItems([]);
+      toast.error("Failed to remove item");
     }
   };
 
+  const clearCart = () => setItems([]);
+
   const getTotalPrice = () =>
     items.reduce((total, item) => total + item.price * item.quantity, 0);
-
-  const clearCart = () => setItems([]);
 
   return (
     <CartContext.Provider
@@ -83,8 +99,8 @@ export const CartProvider = ({ children }) => {
         addItem,
         updateQuantity,
         removeItem,
-        getTotalPrice,
         clearCart,
+        getTotalPrice,
         isLoggedIn,
       }}
     >

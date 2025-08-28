@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { Eye, EyeOff, Store, Mail, Lock, ArrowRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import axiosInstance from "../../../utils/axiosInstance"; // ✅ your axios config
+import { API_PATHS } from "../../../utils/apiPaths"; // ✅ paths
 
 const SellerLog = () => {
   const navigate = useNavigate(); // ✅ initialize
@@ -18,31 +20,27 @@ const SellerLog = () => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  setLoading(true);
+  try {
+    const { data } = await axiosInstance.post(API_PATHS.AUTH.LOGIN, {
+      email: formData.email,
+      password: formData.password,
+    });
 
-    try {
-      setLoading(true);
-      
-      // Mock API call
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      alert("Login successful!");
+    // Save token
+    localStorage.setItem("token", data.token);
+    alert("Login successful!");
 
-      // Reset form
-      setFormData({
-        email: "",
-        password: "",
-      });
-
-      navigate("/seller/dashboard"); // ✅ now it will navigate
-    } catch (error) {
-      console.error(error);
-      alert("Login failed");
-    } finally {
-      setLoading(false);
-    }
-  };
+    navigate("/seller/dashboard");
+  } catch (err) {
+    console.error(err);
+    alert(err.response?.data?.message || "Login failed");
+  } finally {
+    setLoading(false);
+  }
+};
 
 
   return (
@@ -150,7 +148,7 @@ const SellerLog = () => {
             <p className="text-center text-gray-600">
               Don't have a seller account?{" "}
               <button
-                onClick={() => navigate("/register")}
+                onClick={() => navigate("/signup?role=seller")}
                 className="text-green-600 hover:text-green-700 font-semibold hover:underline transition-colors"
               >
                 Register here

@@ -1,8 +1,6 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { Minus, Plus, Trash2, ShoppingBag } from "lucide-react";
-import Header from "../components/layout/Header";
-import Footer from "../components/layout/Footer";
 import { useCart } from "../components/providers/cart-provider";
 import { toast } from "react-hot-toast";
 
@@ -29,15 +27,9 @@ const CardContent = ({ children, className = "" }) => (
 const CardTitle = ({ children }) => <>{children}</>;
 
 export default function CartPage() {
-  const {
-    items,
-    loading,
-    updateQuantity,
-    removeItem,
-    isLoggedIn,
-  } = useCart();
-  const [promoCode, setPromoCode] = useState("");
+  const { items, loading, updateQuantity, removeItem, isLoggedIn } = useCart();
   const [selectedIds, setSelectedIds] = useState([]);
+  const [promoCode, setPromoCode] = useState("");
 
   const selectedItems = items.filter((item) => selectedIds.includes(item._id));
   const selectedTotal = selectedItems.reduce(
@@ -71,13 +63,15 @@ export default function CartPage() {
 
   if (loading) return <div>Loading...</div>;
 
-  if (items.length === 0)
+  if (!items.length)
     return (
       <div className="min-h-screen bg-gray-50 flex flex-col">
         <main className="container mx-auto px-4 py-16 flex-grow text-center">
           <ShoppingBag className="h-24 w-24 mx-auto text-gray-400 mb-4" />
           <h1 className="text-2xl font-bold mb-4">Your cart is empty</h1>
-          <p className="text-gray-600 mb-8">Add some products to get started!</p>
+          <p className="text-gray-600 mb-8">
+            Add some products to get started!
+          </p>
           <Button className="bg-orange-400 hover:bg-orange-500 text-white">
             <Link to="/products">Continue Shopping</Link>
           </Button>
@@ -87,7 +81,6 @@ export default function CartPage() {
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
-    
       <main className="container mx-auto px-4 py-8 flex-grow">
         <h1 className="text-3xl font-bold mb-8">Shopping Cart</h1>
 
@@ -121,9 +114,9 @@ export default function CartPage() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {items.map((item) => (
+                  {items.map((item, index) => (
                     <div
-                      key={item._id}
+                      key={`${item._id}-${index}`}
                       className="flex flex-col sm:flex-row gap-4 p-4 border rounded-lg items-center"
                     >
                       <input
@@ -142,7 +135,9 @@ export default function CartPage() {
                       <div className="flex-1">
                         <h3 className="font-semibold">{item.name}</h3>
                         {item.seller && (
-                          <p className="text-sm text-gray-600">by {item.seller}</p>
+                          <p className="text-sm text-gray-600">
+                            by {item.seller}
+                          </p>
                         )}
                         <p className="text-lg font-bold text-orange-500 mt-1">
                           Rs. {item.price.toLocaleString()}
@@ -153,7 +148,10 @@ export default function CartPage() {
                           size="sm"
                           className="border border-gray-300"
                           onClick={() =>
-                            updateQuantity(item._id, Math.max(1, item.quantity - 1))
+                            updateQuantity(
+                              item._id,
+                              Math.max(1, item.quantity - 1)
+                            )
                           }
                         >
                           <Minus className="h-4 w-4" />
@@ -239,7 +237,6 @@ export default function CartPage() {
           </div>
         </div>
       </main>
-    
     </div>
   );
 }

@@ -8,6 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../components/ui/ta
 import { Badge } from "../../components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "../../components/ui/avatar";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../../components/ui/dialog";
+
 import {
   AlertDialog,
   AlertDialogAction,
@@ -34,6 +35,7 @@ import ProductForm from "./components/ProductForm";
 import AnalyticsCharts from "./components/AnalyticsChart";
 import { useNavigate } from "react-router-dom";
 import { BASE_URL, API_PATHS } from "../../utils/apiPaths";
+import axiosInstance from "@/utils/axiosInstance";
 
 export default function SellerDashboard() {
   const { user: seller, loading } = useUser();
@@ -52,19 +54,17 @@ export default function SellerDashboard() {
   const [isLoading, setIsLoading] = useState(false);
 
   // Fetch seller's products
-  const fetchProducts = async () => {
-    try {
-      setIsLoading(true);
-      const { data } = await axios.get(`${BASE_URL}${API_PATHS.PRODUCT.GET_MY_PRODUCTS}`, {
-        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-      });
-      setProducts(data);
-      setIsLoading(false);
-    } catch (err) {
-      console.error("Error fetching products:", err);
-      setIsLoading(false);
-    }
-  };
+ const fetchProducts = async () => {
+  try {
+    setIsLoading(true);
+    const { data } = await axiosInstance.get(API_PATHS.PRODUCT.GET_MY_PRODUCTS);
+    setProducts(data);
+    setIsLoading(false);
+  } catch (err) {
+    console.error("Error fetching products:", err);
+    setIsLoading(false);
+  }
+};
 
   useEffect(() => {
     if (!loading && seller?.role === "seller") {
@@ -80,65 +80,60 @@ export default function SellerDashboard() {
     navigate("/");
   };
 
-  const handleAddProduct = async (productData) => {
-    try {
-      setIsLoading(true);
-      const formData = new FormData();
-      for (const key in productData) {
-        if (key === "images") {
-          productData.images.forEach((file) => formData.append("images", file));
-        } else {
-          formData.append(key, productData[key]);
-        }
+const handleAddProduct = async (productData) => {
+  try {
+    setIsLoading(true);
+    const formData = new FormData();
+    for (const key in productData) {
+      if (key === "images") {
+        productData.images.forEach((file) => formData.append("images", file));
+      } else {
+        formData.append(key, productData[key]);
       }
-      const { data } = await axios.post(`${BASE_URL}${API_PATHS.PRODUCT.CREATE}`, formData, {
-        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-      });
-      setProducts((prev) => [data, ...prev]);
-      setShowProductForm(false);
-      setIsLoading(false);
-    } catch (err) {
-      console.error("Error adding product:", err);
-      setIsLoading(false);
     }
-  };
+    const { data } = await axiosInstance.post(API_PATHS.PRODUCT.CREATE, formData);
+    setProducts((prev) => [data, ...prev]);
+    setShowProductForm(false);
+    setIsLoading(false);
+  } catch (err) {
+    console.error("Error adding product:", err);
+    setIsLoading(false);
+  }
+};
 
-  const handleEditProduct = async (productData) => {
-    if (!editingProduct) return;
-    try {
-      setIsLoading(true);
-      const formData = new FormData();
-      for (const key in productData) {
-        if (key === "images") {
-          productData.images.forEach((file) => formData.append("images", file));
-        } else {
-          formData.append(key, productData[key]);
-        }
+
+const handleEditProduct = async (productData) => {
+  if (!editingProduct) return;
+  try {
+    setIsLoading(true);
+    const formData = new FormData();
+    for (const key in productData) {
+      if (key === "images") {
+        productData.images.forEach((file) => formData.append("images", file));
+      } else {
+        formData.append(key, productData[key]);
       }
-      const { data } = await axios.put(`${BASE_URL}${API_PATHS.PRODUCT.UPDATE(editingProduct._id)}`, formData, {
-        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-      });
-      setProducts((prev) => prev.map((p) => (p._id === data._id ? data : p)));
-      setEditingProduct(null);
-      setIsLoading(false);
-    } catch (err) {
-      console.error("Error updating product:", err);
-      setIsLoading(false);
     }
-  };
+    const { data } = await axiosInstance.put(API_PATHS.PRODUCT.UPDATE(editingProduct._id), formData);
+    setProducts((prev) => prev.map((p) => (p._id === data._id ? data : p)));
+    setEditingProduct(null);
+    setIsLoading(false);
+  } catch (err) {
+    console.error("Error updating product:", err);
+    setIsLoading(false);
+  }
+};
 
-  const handleDeleteProduct = async () => {
-    if (!deleteProduct) return;
-    try {
-      await axios.delete(`${BASE_URL}${API_PATHS.PRODUCT.DELETE(deleteProduct._id)}`, {
-        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-      });
-      setProducts((prev) => prev.filter((p) => p._id !== deleteProduct._id));
-      setDeleteProduct(null);
-    } catch (err) {
-      console.error("Error deleting product:", err);
-    }
-  };
+const handleDeleteProduct = async () => {
+  if (!deleteProduct) return;
+  try {
+    await axiosInstance.delete(API_PATHS.PRODUCT.DELETE(deleteProduct._id));
+    setProducts((prev) => prev.filter((p) => p._id !== deleteProduct._id));
+    setDeleteProduct(null);
+  } catch (err) {
+    console.error("Error deleting product:", err);
+  }
+};
 
   const openEditForm = (product) => setEditingProduct(product);
 
@@ -162,7 +157,7 @@ export default function SellerDashboard() {
     <AvatarFallback>{seller?.name ? seller.name.charAt(0) : "S"}</AvatarFallback>
   </Avatar>
   <div className="text-sm">
-    <p className="font-medium">{seller?.name || "Loading..."}</p>
+    {/* <p className="font-medium">{seller?.name || "Loading..."}</p> */}
     <p className="text-gray-500">{seller?.shopName || ""}</p>
   </div>
 </div>

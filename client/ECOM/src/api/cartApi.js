@@ -18,14 +18,11 @@ export const addToCart = async (productId, quantity) => {
 
 // 🔹 Update Cart Item
 export const updateCartItem = async (productId, quantity) => {
-  const response = await axiosInstance.put(API_PATHS.CART.UPDATE, {
-    productId,
-    quantity,
-  });
+  const response = await axiosInstance.put(API_PATHS.CART.UPDATE(productId), { quantity });
   return response.data;
 };
 
-// 🔹 Remove Cart Item
+
 export const removeCartItem = async (productId) => {
   const response = await axiosInstance.delete(API_PATHS.CART.REMOVE(productId));
   return response.data;

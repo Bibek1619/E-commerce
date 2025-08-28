@@ -6,11 +6,11 @@ const axiosInstance = axios.create({
   timeout: 30000,
   headers: {
     "Content-Type": "application/json",
-    "Accept": "application/json",
+    Accept: "application/json",
   },
 });
 
-// Add token to headers
+// Attach token automatically
 axiosInstance.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("token");
@@ -22,7 +22,7 @@ axiosInstance.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// ❌ DO NOT redirect globally for 401
+// Response interceptor (optional)
 axiosInstance.interceptors.response.use(
   (response) => response,
   (error) => {
@@ -34,7 +34,7 @@ axiosInstance.interceptors.response.use(
     } else if (error.code === "ECONNABORTED") {
       console.error("Request timeout:", error.message);
     }
-    return Promise.reject(error); // ⬅️ Let the component (like Login.jsx) handle 401
+    return Promise.reject(error); // Let component handle 401
   }
 );
 
