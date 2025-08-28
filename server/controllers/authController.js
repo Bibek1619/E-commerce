@@ -74,25 +74,23 @@ const registerUser = async (req, res) => {
 const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
+    const role = req.query.role || "user"; // default "user" unless ?role=seller
 
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ email, role });
     if (!user) {
-      console.log("User not found for email:", email);
-      return res.status(401).json({ message: 'Invalid email or password' });
+      return res.status(401).json({ message: 'Invalid email, password, or role' });
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      console.log("Password mismatch for email:", email);
       return res.status(401).json({ message: 'Invalid email or password' });
     }
-
-    console.log("Login successful:", email);
 
     res.status(200).json({
       _id: user._id,
       name: user.name,
       email: user.email,
+      role: user.role,
       token: generateToken(user._id),
     });
   } catch (error) {

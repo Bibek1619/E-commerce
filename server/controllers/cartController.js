@@ -64,8 +64,8 @@ const addToCart = async (req, res) => {
 
 // 🔹 UPDATE quantity
 const updateCartItem = async (req, res) => {
-  const { productId, quantity } = req.body;
-
+   const { quantity } = req.body;
+  const { productId } = req.params;
   try {
     const user = await User.findById(req.user._id);
 
