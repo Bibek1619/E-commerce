@@ -59,21 +59,30 @@ export const CartProvider = ({ children }) => {
     }
   };
 
-  const updateQuantity = async (productId, quantity) => {
-    if (!isLoggedIn) return toast.error("Please login to update cart");
-    try {
-      if (quantity <= 0) return removeItem(productId);
-      await updateCartItem(productId, quantity);
-      setItems((prev) =>
-        prev.map((item) =>
-          item._id === productId ? { ...item, quantity } : item
-        )
-      );
-    } catch (err) {
-      console.error(err);
-      toast.error("Failed to update cart");
-    }
-  };
+const updateQuantity = async (productId, quantity) => {
+  if (!isLoggedIn) return toast.error("Please login to update cart");
+
+  try {
+    if (quantity <= 0) return removeItem(productId);
+
+    console.log("Updating cart item:", productId, quantity);
+
+    await updateCartItem(productId, quantity);
+
+    setItems((prev) =>
+      prev.map((item) =>
+        item.id === productId ? { ...item, quantity } : item
+      )
+    );
+  } catch (err) {
+    console.error(err);
+    toast.error("Failed to update cart");
+  }
+};
+
+
+
+
 
   const removeItem = async (productId) => {
     if (!isLoggedIn) return toast.error("Please login to remove items");

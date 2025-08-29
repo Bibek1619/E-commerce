@@ -18,7 +18,8 @@ const productSchema = new mongoose.Schema({
       rating: Number,
       date: { type: Date, default: Date.now }
     }
-  ]
+  ],
+  tags: { type: [String], default: [] }
 }, { timestamps: true });
 
 module.exports = mongoose.model("Product", productSchema);

@@ -10,7 +10,7 @@ import AppProviders from './AppProviders';
 import Layout from './components/layout/Layout'; // import Layout
 import SellerReg from './pages/Auth/seller/SellerReg';
 import SellerLog from './pages/Auth/seller/SellerLog';
-import SellerDashboard from './pages/seller/Dashboard';
+import SellerDashboard from './pages/seller/SellerDashboard';
 
 const App = () => {
   return (

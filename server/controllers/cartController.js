@@ -64,28 +64,47 @@ const addToCart = async (req, res) => {
 
 // 🔹 UPDATE quantity
 const updateCartItem = async (req, res) => {
-   const { quantity } = req.body;
-  const { productId } = req.params;
   try {
-    const user = await User.findById(req.user._id);
+    const { productId } = req.params;
+    const { quantity } = req.body;
 
+    if (!productId) {
+      return res.status(400).json({ message: "Product ID is required" });
+    }
+
+    if (!quantity || quantity < 1) {
+      return res.status(400).json({ message: "Quantity must be at least 1" });
+    }
+
+    const userId = req.user.id; // ✅ from auth middleware
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Find product inside user's cart
     const item = user.cart.find(
-      (item) => item.productId.toString() === productId
+      (cartItem) => cartItem.productId.toString() === productId
     );
 
     if (!item) {
-      return res.status(404).json({ message: "Item not found in cart" });
+      return res.status(404).json({ message: "Product not in cart" });
     }
 
+    // Update quantity
     item.quantity = quantity;
+
     await user.save();
 
-    await user.populate("cart.productId");
-    res.json(formatCart(user.cart));
-  } catch (err) {
-    res.status(500).json({ message: "Failed to update cart item" });
+    return res.json({ message: "Cart updated successfully", cart: user.cart });
+  } catch (error) {
+    console.error("Error updating cart:", error);
+    return res.status(500).json({ message: "Server error" });
   }
 };
+
+
 
 // 🔹 REMOVE from cart
 const removeFromCart = async (req, res) => {

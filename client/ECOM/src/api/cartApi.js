@@ -18,6 +18,7 @@ export const addToCart = async (productId, quantity) => {
 
 // 🔹 Update Cart Item
 export const updateCartItem = async (productId, quantity) => {
+   console.log("Updating cart item:", productId, quantity); 
   const response = await axiosInstance.put(API_PATHS.CART.UPDATE(productId), { quantity });
   return response.data;
 };

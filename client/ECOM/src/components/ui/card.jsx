@@ -90,7 +90,7 @@ function CardFooter({
   );
 }
 
-export {
+ export  {
   Card,
   CardHeader,
   CardFooter,
