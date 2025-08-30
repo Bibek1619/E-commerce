@@ -11,7 +11,7 @@ export const API_PATHS = {
     GET: "/api/cart",
     ADD: "/api/cart/add",
 UPDATE: (productId) => `/api/cart/update/${productId}`, 
-    REMOVE: (productId) => `/api/cart/remove/${productId}`, // dynamic route
+    REMOVE: (productId) => `/api/cart/remove/${productId}`,
   },
   
   PRODUCT: {
