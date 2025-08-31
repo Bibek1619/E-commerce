@@ -24,10 +24,13 @@ const handleSubmit = async (e) => {
   e.preventDefault();
   setLoading(true);
   try {
-    const { data } = await axiosInstance.post(API_PATHS.AUTH.LOGIN, {
-      email: formData.email,
-      password: formData.password,
-    });
+   const { data } = await axiosInstance.post(
+  `${API_PATHS.AUTH.LOGIN}?role=seller`,  // 👈 Add role here
+  {
+    email: formData.email,
+    password: formData.password,
+  }
+);
 
     // Save token
     localStorage.setItem("token", data.token);
