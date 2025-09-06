@@ -1,13 +1,16 @@
 const Product = require("../models/Product");
 
 // 🔹 Create a new product (directly posted)
+// 🔹 Create a new product
 const createProduct = async (req, res) => {
   try {
-    const imagePaths = req.files ? req.files.map(file => `/uploads/${file.filename}`) : [];
+    const imagePaths = req.files
+      ? req.files.map(file => `${req.protocol}://${req.get("host")}/images/${file.filename}`)
+      : [];
 
     const product = await Product.create({
       ...req.body,
-      seller: req.user._id, // automatically link seller
+      seller: req.user._id,
       images: imagePaths
     });
 
@@ -17,6 +20,7 @@ const createProduct = async (req, res) => {
     res.status(500).json({ message: "Failed to create product" });
   }
 };
+
 
 // 🔹 Get all products (public)
 const getProducts = async (req, res) => {
@@ -53,12 +57,16 @@ const getProductById = async (req, res) => {
 };
 
 // 🔹 Update a product (only by seller)
+// 🔹 Update a product
 const updateProduct = async (req, res) => {
   try {
     const product = await Product.findOne({ _id: req.params.id, seller: req.user._id });
     if (!product) return res.status(404).json({ message: "Product not found" });
 
-    const imagePaths = req.files ? req.files.map(file => `/uploads/${file.filename}`) : [];
+    const imagePaths = req.files
+      ? req.files.map(file => `${req.protocol}://${req.get("host")}/images/${file.filename}`)
+      : [];
+
     Object.assign(product, req.body);
     if (imagePaths.length) product.images = imagePaths;
 
@@ -69,6 +77,7 @@ const updateProduct = async (req, res) => {
     res.status(500).json({ message: "Failed to update product" });
   }
 };
+
 
 // 🔹 Delete a product (only by seller)
 const deleteProduct = async (req, res) => {

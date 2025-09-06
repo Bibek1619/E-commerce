@@ -2,8 +2,18 @@ import React, { useState, useEffect } from "react";
 import { useUser } from "../../components/providers/userProvider";
 import { Button } from "../../components/ui/button";
 import { Card, CardContent } from "../../components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../components/ui/tabs";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../../components/ui/dialog";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "../../components/ui/tabs";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "../../components/ui/dialog";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -25,7 +35,7 @@ import ProductList from "./components/ProductList";
 import SellerHeader from "./components/SellerHeader";
 
 export default function SellerDashboard() {
-  const { user: seller, loading } = useUser();
+   const { user: seller, loading, clearUser } = useUser();
   const navigate = useNavigate();
 
   const [products, setProducts] = useState([]);
@@ -43,7 +53,9 @@ export default function SellerDashboard() {
   const fetchProducts = async () => {
     try {
       setIsLoading(true);
-      const { data } = await axiosInstance.get(API_PATHS.PRODUCT.GET_MY_PRODUCTS);
+      const { data } = await axiosInstance.get(
+        API_PATHS.PRODUCT.GET_MY_PRODUCTS
+      );
       setProducts(data);
       setIsLoading(false);
     } catch (err) {
@@ -58,25 +70,47 @@ export default function SellerDashboard() {
     }
   }, [loading, seller]);
 
-  if (loading) return <div className="flex items-center justify-center min-h-screen">Loading...</div>;
+  if (loading)
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        Loading...
+      </div>
+    );
 
   const handleLogout = () => {
     localStorage.removeItem("token");
+    clearUser(); // ✅ clear context state
     navigate("/");
   };
 
+
+  // Handle Add Product
   const handleAddProduct = async (productData) => {
     try {
       setIsLoading(true);
+
+      // Prepare FormData
       const formData = new FormData();
-      for (const key in productData) {
-        if (key === "images") {
-          productData.images.forEach((file) => formData.append("images", file));
-        } else {
-          formData.append(key, productData[key]);
-        }
+      formData.append("name", productData.name);
+      formData.append("description", productData.description || "");
+      formData.append("price", productData.price);
+      formData.append("discountedPrice", productData.discountedPrice || 0);
+      formData.append("stock", productData.stock || 0);
+
+      // Append each category separately
+      if (productData.category && productData.category.length > 0) {
+        productData.category.forEach((c) => formData.append("category", c));
       }
-      const { data } = await axiosInstance.post(API_PATHS.PRODUCT.CREATE, formData);
+
+      // Append images if available
+      if (productData.images?.length) {
+        productData.images.forEach((file) => formData.append("images", file));
+      }
+
+      const { data } = await axiosInstance.post(
+        API_PATHS.PRODUCT.CREATE,
+        formData
+      );
       setProducts((prev) => [data, ...prev]);
       setShowProductForm(false);
       setIsLoading(false);
@@ -86,19 +120,42 @@ export default function SellerDashboard() {
     }
   };
 
+  // Handle Edit Product
   const handleEditProduct = async (productData) => {
     if (!editingProduct) return;
+
     try {
       setIsLoading(true);
+
       const formData = new FormData();
-      for (const key in productData) {
-        if (key === "images") {
-          productData.images.forEach((file) => formData.append("images", file));
-        } else {
-          formData.append(key, productData[key]);
-        }
+      formData.append("name", productData.name);
+      formData.append("description", productData.description || "");
+      formData.append(
+        "price",
+        productData.price ? Number(productData.price) : 0
+      );
+      formData.append(
+        "discountedPrice",
+        productData.discountedPrice ? Number(productData.discountedPrice) : 0
+      );
+      formData.append(
+        "stock",
+        productData.stock ? Number(productData.stock) : 0
+      );
+
+      if (productData.category && productData.category.length > 0) {
+        productData.category.forEach((c) => formData.append("category", c));
       }
-      const { data } = await axiosInstance.put(API_PATHS.PRODUCT.UPDATE(editingProduct._id), formData);
+
+      if (productData.images?.length) {
+        productData.images.forEach((file) => formData.append("images", file));
+      }
+
+      const { data } = await axiosInstance.put(
+        API_PATHS.PRODUCT.UPDATE(editingProduct._id),
+        formData
+      );
+
       setProducts((prev) => prev.map((p) => (p._id === data._id ? data : p)));
       setEditingProduct(null);
       setIsLoading(false);
@@ -130,8 +187,12 @@ export default function SellerDashboard() {
           <Card>
             <CardContent className="p-6 flex justify-between items-center">
               <div>
-                <p className="text-sm font-medium text-gray-600">Total Products</p>
-                <p className="text-2xl font-bold text-gray-900">{products.length}</p>
+                <p className="text-sm font-medium text-gray-600">
+                  Total Products
+                </p>
+                <p className="text-2xl font-bold text-gray-900">
+                  {products.length}
+                </p>
               </div>
               <Package className="h-8 w-8 text-orange-600" />
             </CardContent>
@@ -157,16 +218,18 @@ export default function SellerDashboard() {
           </TabsContent>
 
           <TabsContent value="add-product">
-            <ProductForm onSubmit={handleAddProduct} onCancel={() => setShowProductForm(false)} isLoading={isLoading} />
+            <ProductForm
+              onSubmit={handleAddProduct}
+              onCancel={() => setShowProductForm(false)}
+              isLoading={isLoading}
+            />
           </TabsContent>
 
           <TabsContent value="analytics">
             <AnalyticsCharts salesData={salesData} />
           </TabsContent>
 
-          <TabsContent value="profile">
-            {/* Profile content */}
-          </TabsContent>
+          <TabsContent value="profile">{/* Profile content */}</TabsContent>
         </Tabs>
       </div>
 
@@ -176,11 +239,18 @@ export default function SellerDashboard() {
           <DialogHeader>
             <DialogTitle>Add New Product</DialogTitle>
           </DialogHeader>
-          <ProductForm onSubmit={handleAddProduct} onCancel={() => setShowProductForm(false)} isLoading={isLoading} />
+          <ProductForm
+            onSubmit={handleAddProduct}
+            onCancel={() => setShowProductForm(false)}
+            isLoading={isLoading}
+          />
         </DialogContent>
       </Dialog>
 
-      <Dialog open={!!editingProduct} onOpenChange={() => setEditingProduct(null)}>
+      <Dialog
+        open={!!editingProduct}
+        onOpenChange={() => setEditingProduct(null)}
+      >
         <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Edit Product</DialogTitle>
@@ -196,17 +266,24 @@ export default function SellerDashboard() {
         </DialogContent>
       </Dialog>
 
-      <AlertDialog open={!!deleteProduct} onOpenChange={() => setDeleteProduct(null)}>
+      <AlertDialog
+        open={!!deleteProduct}
+        onOpenChange={() => setDeleteProduct(null)}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Delete Product</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to delete "{deleteProduct?.name}"? This action cannot be undone.
+              Are you sure you want to delete "{deleteProduct?.name}"? This
+              action cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDeleteProduct} className="bg-red-600 hover:bg-red-700">
+            <AlertDialogAction
+              onClick={handleDeleteProduct}
+              className="bg-red-600 hover:bg-red-700"
+            >
               Delete
             </AlertDialogAction>
           </AlertDialogFooter>

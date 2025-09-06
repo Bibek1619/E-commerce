@@ -11,7 +11,7 @@ const {
 } = require("../controllers/productController");
 
 const { protect } = require("../middlewares/authMiddleware");
-const upload = require("../middlewares/multers");
+const upload = require("../middlewares/upload");
 
 const router = express.Router();
 
