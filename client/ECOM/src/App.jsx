@@ -11,6 +11,8 @@ import Layout from './components/layout/Layout'; // import Layout
 import SellerReg from './pages/Auth/seller/SellerReg';
 import SellerLog from './pages/Auth/seller/SellerLog';
 import SellerDashboard from './pages/seller/SellerDashboard';
+import Category from './pages/category/category';
+import ProductPage from './pages/product/ProductDetails';
 
 const App = () => {
   return (
@@ -35,6 +37,8 @@ const App = () => {
              <Route path='/signup' element={<SellerReg/>}/>
              <Route path='/Signin' element={<SellerLog/>}/>
              <Route path='/seller/dashboard'element={<SellerDashboard/>}/>
+             <Route path='/category/:category' element={<Category/>}/>
+              <Route path="/product/:id" element={<ProductPage />} />
 
 
           </Routes>

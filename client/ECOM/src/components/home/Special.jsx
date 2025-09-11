@@ -86,6 +86,7 @@ const Special = () => {
         <div
           key={product._id}
           className="border rounded p-4 shadow hover:shadow-lg relative bg-white"
+          onClick={() => navigate(`/product/${product._id}`)}
         >
           {/* Image container */}
           <div className="relative">
@@ -100,7 +101,12 @@ const Special = () => {
               type="button"
               title="Add to wishlist"
               className="absolute top-2 right-10 bg-white p-1 rounded-full shadow hover:bg-red-100"
-              onClick={() => alert("Wishlist clicked")}
+              onClick={(e) =>{
+                e.stopPropagation();
+                
+                
+                alert("Wishlist clicked")}
+              }
             >
               <Heart className="w-5 h-5 text-gray-600 hover:text-red-500" />
             </button>
@@ -110,7 +116,10 @@ const Special = () => {
               type="button"
               title="Add to cart"
               className="absolute top-2 right-2 bg-white p-1 rounded-full shadow hover:bg-green-100"
-              onClick={() => handleAddToCartClick(product)}
+             onClick={(e) => {
+        e.stopPropagation(); // 👈 stop navigation
+        handleAddToCartClick(product);
+      }}
             >
               <ShoppingCart className="w-5 h-5 text-gray-600 hover:text-green-600" />
             </button>

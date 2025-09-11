@@ -5,13 +5,28 @@ const Product = require("../models/Product");
 const createProduct = async (req, res) => {
   try {
     const imagePaths = req.files
-      ? req.files.map(file => `${req.protocol}://${req.get("host")}/images/${file.filename}`)
+      ? req.files.map(
+          (file) => `${req.protocol}://${req.get("host")}/images/${file.filename}`
+        )
       : [];
+
+    // 🟢 Normalize category to lowercase-with-dashes
+    let normalizedCategory = [];
+    if (Array.isArray(req.body.category)) {
+      normalizedCategory = req.body.category.map((c) =>
+        c.toLowerCase().trim().replace(/\s+/g, "-")
+      );
+    } else if (typeof req.body.category === "string") {
+      normalizedCategory = [
+        req.body.category.toLowerCase().trim().replace(/\s+/g, "-"),
+      ];
+    }
 
     const product = await Product.create({
       ...req.body,
+      category: normalizedCategory,
       seller: req.user._id,
-      images: imagePaths
+      images: imagePaths,
     });
 
     res.status(201).json(product);

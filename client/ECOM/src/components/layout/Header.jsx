@@ -38,7 +38,7 @@ const cartCount = items.length;
   };
   const categories = [
     "Traditional Clothes",
-    "Food Items",
+    "Food-Item",
     "Furniture",
     "Handicrafts",
     "Herbs",
