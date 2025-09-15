@@ -117,7 +117,7 @@ const Special = () => {
               title="Add to cart"
               className="absolute top-2 right-2 bg-white p-1 rounded-full shadow hover:bg-green-100"
              onClick={(e) => {
-        e.stopPropagation(); // 👈 stop navigation
+        e.stopPropagation(); // 👈 stop naviga
         handleAddToCartClick(product);
       }}
             >
