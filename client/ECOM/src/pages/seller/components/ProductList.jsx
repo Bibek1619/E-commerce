@@ -21,14 +21,22 @@ export default function ProductList({ products, onEdit, onDelete, onAdd }) {
         <div className="space-y-4">
           {products.map((product) => (
             <div key={product._id} className="flex items-center gap-4 p-4 border rounded-lg">
-              <img
-                src={product.images[0] || "/placeholder.svg"}
-                alt={product.name}
-                className="w-16 h-16 object-cover rounded-md"
-              />
+            <img
+  src={
+    Array.isArray(product.images) && product.images.length > 0
+      ? product.images[0]
+      : "/placeholder.svg"
+  }
+  alt={product.name || "Product"}
+  className="w-16 h-16 object-cover rounded-md"
+/>
+
               <div className="flex-1">
                 <h3 className="font-semibold text-gray-900">{product.name}</h3>
-                <p className="text-sm text-gray-600">{product.description}</p>
+              <p className="text-sm text-gray-600 break-words max-w-[250px] overflow-y-auto max-h-20 whitespace-pre-line">
+  {product.description}
+</p>
+
                 <div className="flex items-center gap-2 mt-2">
                   <span className="font-medium text-gray-900">Rs. {product.price}</span>
                   {product.discountedPrice && (
