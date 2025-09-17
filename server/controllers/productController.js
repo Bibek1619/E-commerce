@@ -1,5 +1,6 @@
 const Product = require("../models/Product");
-
+const fs =require("fs");
+const path = require("path");
 // 🔹 Create a new product (directly posted)
 // 🔹 Create a new product
 const createProduct = async (req, res) => {
@@ -9,6 +10,14 @@ const createProduct = async (req, res) => {
           (file) => `${req.protocol}://${req.get("host")}/images/${file.filename}`
         )
       : [];
+      let variants = [];
+    if (req.body.variants) {
+      try {
+        variants = JSON.parse(req.body.variants);
+      } catch (err) {
+        console.error("❌ Error parsing variants JSON:", err);
+      }
+    }
 
     // 🟢 Normalize category to lowercase-with-dashes
     let normalizedCategory = [];
@@ -81,6 +90,15 @@ const updateProduct = async (req, res) => {
     const imagePaths = req.files
       ? req.files.map(file => `${req.protocol}://${req.get("host")}/images/${file.filename}`)
       : [];
+      // Parse variants if present
+    let variants = product.variants; // fallback to existing
+    if (req.body.variants) {
+      try {
+        variants = JSON.parse(req.body.variants);
+      } catch (err) {
+        console.error("❌ Error parsing variants JSON:", err);
+      }
+    }
 
     Object.assign(product, req.body);
     if (imagePaths.length) product.images = imagePaths;
@@ -97,9 +115,25 @@ const updateProduct = async (req, res) => {
 // 🔹 Delete a product (only by seller)
 const deleteProduct = async (req, res) => {
   try {
-    const product = await Product.findOneAndDelete({ _id: req.params.id, seller: req.user._id });
+    const product = await Product.findOne({ _id: req.params.id, seller: req.user._id });
     if (!product) return res.status(404).json({ message: "Product not found" });
-    res.json({ message: "Product deleted" });
+
+    // 🗑 Delete image files from /public/images
+    if (product.images && product.images.length > 0) {
+      product.images.forEach(imgUrl => {
+        const filename = imgUrl.split("/images/")[1]; // extract "172345123-shirt.jpg"
+        if (!filename) return;
+
+        const imagePath = path.join(__dirname, "..", "public", "images", filename);
+        if (fs.existsSync(imagePath)) {
+          fs.unlinkSync(imagePath);
+        }
+      });
+    }
+
+    await product.deleteOne();
+
+    res.json({ message: "Product deleted successfully" });
   } catch (err) {
     console.error("❌ Error deleting product:", err);
     res.status(500).json({ message: "Failed to delete product" });
