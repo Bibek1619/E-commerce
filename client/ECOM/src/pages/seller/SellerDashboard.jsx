@@ -98,9 +98,10 @@ export default function SellerDashboard() {
       formData.append("stock", productData.stock || 0);
 
       // Append each category separately
-      if (productData.category && productData.category.length > 0) {
-        productData.category.forEach((c) => formData.append("category", c));
-      }
+    if (productData.variants && productData.variants.length > 0) {
+  formData.append("variants", JSON.stringify(productData.variants));
+}
+
 
       // Append images if available
       if (productData.images?.length) {
@@ -143,9 +144,10 @@ export default function SellerDashboard() {
         productData.stock ? Number(productData.stock) : 0
       );
 
-      if (productData.category && productData.category.length > 0) {
-        productData.category.forEach((c) => formData.append("category", c));
-      }
+      if (productData.variants && productData.variants.length > 0) {
+  formData.append("variants", JSON.stringify(productData.variants));
+}
+
 
       if (productData.images?.length) {
         productData.images.forEach((file) => formData.append("images", file));
@@ -270,19 +272,22 @@ export default function SellerDashboard() {
         open={!!deleteProduct}
         onOpenChange={() => setDeleteProduct(null)}
       >
-        <AlertDialogContent>
+       <AlertDialogContent className="bg-white rounded-lg shadow-lg text-gray-800">
+
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete Product</AlertDialogTitle>
-            <AlertDialogDescription>
+            <AlertDialogTitle className='font-extrabold text-2xl '>Delete Product</AlertDialogTitle>
+            <AlertDialogDescription className={
+              "mt-1 text-gray-700 text-[15px] font-medium"
+            }>
               Are you sure you want to delete "{deleteProduct?.name}"? This
               action cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel className='cursor-pointer'>Cancel</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDeleteProduct}
-              className="bg-red-600 hover:bg-red-700"
+              className="bg-red-600 hover:bg-red-700 text-white cursor-pointer"
             >
               Delete
             </AlertDialogAction>
