@@ -7,12 +7,12 @@ import Login from './pages/Auth/user/Login';
 import Verification from './pages/Auth/Verification';
 import { Toaster } from 'react-hot-toast';
 import AppProviders from './AppProviders';
-import Layout from './components/layout/Layout'; // import Layout
+import Layout from './components/layout/Layout'; // impLayout
 import SellerReg from './pages/Auth/seller/SellerReg';
 import SellerLog from './pages/Auth/seller/SellerLog';
 import SellerDashboard from './pages/seller/SellerDashboard';
 import Category from './pages/category/category';
-import ProductPage from './pages/product/ProductDetails';
+import ProductPage from './pages/product/ProductPage';
 
 const App = () => {
   return (
