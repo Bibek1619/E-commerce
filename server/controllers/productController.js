@@ -164,6 +164,43 @@ const getCategories = async (req, res) => {
     res.status(500).json({ message: "Failed to fetch categories" });
   }
 };
+// 🔍 Search products by name or tags
+// 🔍 Search products by name, tags, category, brand, price, sort
+const searchProducts = async (req, res) => {
+  try {
+    const { q } = req.query;
+    const filter = {};
+
+    if (q) {
+      const regex = new RegExp(q, "i"); // case-insensitive
+      filter.$or = [
+        { name: regex },
+        { tags: regex } // simple array match
+      ];
+    }
+
+    console.log("Filter:", JSON.stringify(filter, null, 2)); // debug
+
+    const products = await Product.find(filter).populate("seller", "name email");
+
+    res.json({
+      products,
+      total: products.length,
+    });
+  } catch (err) {
+    console.error("❌ Error searching products:", err);
+    res.status(500).json({ message: "Failed to search products" });
+  }
+};
+
+
+
+
+
+
+
+
+
 
 module.exports = {
   createProduct,
@@ -173,5 +210,7 @@ module.exports = {
   updateProduct,
   deleteProduct,
   getProductsByCategory,
-  getCategories
+  getCategories,
+  searchProducts
+
 };

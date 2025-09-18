@@ -13,6 +13,7 @@ import SellerLog from './pages/Auth/seller/SellerLog';
 import SellerDashboard from './pages/seller/SellerDashboard';
 import Category from './pages/category/category';
 import ProductPage from './pages/product/ProductPage';
+import SearchPage from './pages/search/SearchPage';
 
 const App = () => {
   return (
@@ -39,6 +40,7 @@ const App = () => {
              <Route path='/seller/dashboard'element={<SellerDashboard/>}/>
              <Route path='/category/:category' element={<Category/>}/>
               <Route path="/product/:id" element={<ProductPage />} />
+              <Route path="/search" element={<SearchPage />} />
 
 
           </Routes>

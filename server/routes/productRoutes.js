@@ -7,7 +7,8 @@ const {
   updateProduct,
   deleteProduct,
   getProductsByCategory,
-  getCategories
+  getCategories,
+  searchProducts
 } = require("../controllers/productController");
 
 const { protect } = require("../middlewares/authMiddleware");
@@ -27,8 +28,13 @@ router.delete("/:id", protect, deleteProduct);
 
 // 📌 Seller Route (must be before "/:id")
 router.get("/my-products", protect, getSellerProducts); 
+//for searching products
+router.get("/search", searchProducts);
 
 // 📌 Product by ID (should be last)
 router.get("/:id", getProductById);
+
+
+
 
 module.exports = router;
