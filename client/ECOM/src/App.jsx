@@ -14,6 +14,7 @@ import SellerDashboard from './pages/seller/SellerDashboard';
 import Category from './pages/category/category';
 import ProductPage from './pages/product/ProductPage';
 import SearchPage from './pages/search/SearchPage';
+import CheckoutPage from './pages/checkout/CheckoutPage';
 
 const App = () => {
   return (
@@ -41,6 +42,9 @@ const App = () => {
              <Route path='/category/:category' element={<Category/>}/>
               <Route path="/product/:id" element={<ProductPage />} />
               <Route path="/search" element={<SearchPage />} />
+
+              <Route path="/checkout" element={<CheckoutPage />} />
+
 
 
           </Routes>
