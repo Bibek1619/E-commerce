@@ -9,6 +9,7 @@ export const useCart = () => useContext(CartContext);
 export const CartProvider = ({ children }) => {
   const { user } = useUser();
   const [items, setItems] = useState([]);
+  const [buyNow,setBuyNow] = useState(null);//st9re buy now product
   const [loading, setLoading] = useState(true);
 
   const isLoggedIn = !!user;
@@ -100,10 +101,19 @@ const updateQuantity = async (productId, quantity) => {
   const getTotalPrice = () =>
     items.reduce((total, item) => total + item.price * item.quantity, 0);
 
+
+ const buyNowItem = (product, quantity = 1) => {
+    if (!isLoggedIn) {
+      toast.error("Please login to buy products");
+      return;
+    }
+    setBuyNow({ ...product, quantity });
+  };
   return (
     <CartContext.Provider
       value={{
         items,
+        buyNow,
         loading,
         addItem,
         updateQuantity,
@@ -111,6 +121,7 @@ const updateQuantity = async (productId, quantity) => {
         clearCart,
         getTotalPrice,
         isLoggedIn,
+        buyNowItem
       }}
     >
       {children}
