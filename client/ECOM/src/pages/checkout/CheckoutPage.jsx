@@ -1,6 +1,5 @@
-import {  useState } from "react";
-import { useEffect } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate, useLocation, Link } from "react-router-dom";
 import { useUser } from "@/components/providers/userProvider";
 import { useCart } from "@/components/providers/cart-provider";
 import { Card, CardContent } from "@/components/ui/card";
@@ -16,9 +15,8 @@ import {
   Wallet,
 } from "lucide-react";
 
-
 function CheckoutPage() {
-  const { user,loading } = useUser();
+  const { user, loading } = useUser();
   const { items, buyNow } = useCart();
   const navigate = useNavigate();
   const location = useLocation();
@@ -76,9 +74,20 @@ function CheckoutPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-10 px-4">
-      <div className="max-w-6xl mx-auto grid md:grid-cols-3 gap-8">
-        
+    <div className="min-h-screen bg-gray-50 ">
+      {/* 🔹 Header bar */}
+      <div className="bg-gray-800 py-4 px-6 fixed top-0 left-0 w-full">
+        <Link
+          to="/"
+          className="flex items-center gap-2 text-2xl font-bold text-orange-400"
+        >
+          <img src="/images/nepal-01-1.svg" alt="logo" className="h-10 w-10" />
+          NepaliBazar
+        </Link>
+      </div>
+
+      {/* 🔹 Main checkout content */}
+      <div className="py-10 px-4 max-w-6xl mx-auto grid md:grid-cols-3 gap-8">
         {/* Left - Details */}
         <div className="md:col-span-2 space-y-6">
           {/* Checkout Header */}
@@ -197,7 +206,7 @@ function CheckoutPage() {
         <div>
           <Card className="p-6 shadow-md sticky top-10">
             <h2 className="text-xl font-semibold mb-4">Order Summary</h2>
-            
+
             <div className="flex justify-between text-sm mb-2">
               <span>Subtotal</span>
               <span>${total.toFixed(2)}</span>
