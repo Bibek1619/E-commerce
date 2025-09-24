@@ -10,6 +10,7 @@ const connectDB = require("./config/db");
 const authRoutes = require("./routes/authRoutes");
 const productRoutes = require("./routes/productRoutes");
 const cartRoutes = require("./routes/cartRoutes");
+const orderRoutes = require("./routes/orderRoutes");
 
 const app = express();
 
@@ -34,6 +35,8 @@ app.use("/images", express.static(path.join(__dirname, "public", "images")));
 app.use("/api/auth", authRoutes);
 app.use("/api/cart", cartRoutes);
 app.use("/api/products", productRoutes);
+app.use("/api/orders", orderRoutes);
+
 
 // ✅ Start the server
 const PORT = process.env.PORT || 5000;
