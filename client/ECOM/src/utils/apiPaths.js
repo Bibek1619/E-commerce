@@ -24,4 +24,9 @@ UPDATE: (productId) => `/api/cart/update/${productId}`,
     DELETE: (id) => `/api/products/${id}`,           // DELETE product (protected)
     GET_MY_PRODUCTS: "/api/products/my-products",    // GET seller's own products (protected)
   },
+  ORDER: {
+    CREATE: "/api/orders",                // POST create new order
+    GET_MY_ORDERS: "/api/orders/my-orders", // GET current user's orders
+    GET_BY_ID: (id) => `/api/orders/${id}`, // GET single order by id
+  },
 };
