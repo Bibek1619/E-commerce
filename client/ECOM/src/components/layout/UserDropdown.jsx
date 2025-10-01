@@ -1,50 +1,73 @@
-import React, { useState } from "react"; // ✅ Make sure React is imported
-import { Link } from "react-router-dom";
-import { User } from "lucide-react";
+// UserDropdown.jsx
+import React, { useState } from "react";
 import { Button } from "../ui/button";
-
+import { User } from "lucide-react";
 import {
   DropdownMenu,
+  DropdownMenuTrigger,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
+import { useUser } from "../providers/userProvider";
+import AuthModal from "../auth/AuthModal";
+import Login from "@/pages/Auth/user/Login";
+import SignUp from "@/pages/Auth/user/SignUp";
 
-import { useUser } from "../providers/userProvider"; // 
-
-// ✅ make sure hook is only used inside the component
 const UserDropdown = () => {
-  const { user, clearUser } = useUser(); // ✅ must be inside the component
-  const [openAuthModal, setOpenAuthModal] = useState(false);
+  const { user, clearUser } = useUser();
+  const [modalType, setModalType] = useState(null); // "login" or "signup"
 
+  const isModalOpen = !!modalType;
+
+  // Logged out
   if (!user) {
     return (
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button
-            variant="link"
-            aria-label="User menu"
-            className="hover:bg-amber-500 cursor-pointer w-11 h-11"
-          >
-            <User style={{ height: "28px", width: "28px" }} />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-48 bg-white">
-          <DropdownMenuItem asChild>
-            <Link to="/auth/signin" className="block w-full hover:bg-amber-500 cursor-pointer">
+      <>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="link"
+              aria-label="User menu"
+              className="hover:bg-amber-500 cursor-pointer w-11 h-11"
+            >
+              <User style={{ width: 28, height: 28 }} />
+            </Button>
+          </DropdownMenuTrigger>
+
+          <DropdownMenuContent align="end" className="w-48 bg-white">
+            <DropdownMenuItem onClick={() => setModalType("login")}>
               Sign In
-            </Link>
-          </DropdownMenuItem>
-          <DropdownMenuItem asChild>
-            <Link to="/auth/signup" className="block w-full hover:bg-amber-500 cursor-pointer">
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setModalType("signup")}>
               Sign Up
-            </Link>
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+
+       <AuthModal
+  open={isModalOpen}
+  onClose={() => setModalType(null)}
+  title={modalType === "login" ? "Sign In" : "Sign Up"}
+>
+  {modalType === "login" && (
+    <Login
+      onSuccess={() => setModalType(null)}
+      switchToSignup={() => setModalType("signup")} // ✅ pass function here
+    />
+  )}
+  {modalType === "signup" && (
+    <SignUp
+      onSuccess={() => setModalType(null)}
+      switchToLogin={() => setModalType("login")} // ✅ pass function here
+    />
+  )}
+</AuthModal>
+
+      </>
     );
   }
 
+  // Logged in
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -59,29 +82,13 @@ const UserDropdown = () => {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-48 bg-white">
         <DropdownMenuItem asChild>
-          <Link to="/dashboard" className="block w-full hover:bg-amber-500 cursor-pointer">
-            Dashboard
-          </Link>
+          <Link to="/dashboard">Dashboard</Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
-          <Link to="/orders" className="block w-full hover:bg-amber-500 cursor-pointer">
-            Orders
-          </Link>
+          <Link to="/orders">Orders</Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
-          <Link to="/reviews" className="block w-full hover:bg-amber-500 cursor-pointer">
-            My Reviews
-          </Link>
-        </DropdownMenuItem>
-        <DropdownMenuItem asChild>
-          <Link to="/settings" className="block w-full hover:bg-amber-500 cursor-pointer">
-            Settings
-          </Link>
-        </DropdownMenuItem>
-        <DropdownMenuItem asChild>
-          <Link to="/profile" className="block w-full hover:bg-amber-500 cursor-pointer">
-            Profile
-          </Link>
+          <Link to="/profile">Profile</Link>
         </DropdownMenuItem>
         <DropdownMenuItem
           onClick={clearUser}
