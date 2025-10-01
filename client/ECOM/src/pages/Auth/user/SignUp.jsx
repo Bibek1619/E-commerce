@@ -14,13 +14,15 @@ import axiosInstance from "@/utils/axiosInstance";
 import { API_PATHS } from "@/utils/apiPaths";
 import { UserContext } from "@/components/providers/userProvider";
 
-const SignUp = () => {
+const SignUp = ({switchToLogin}) => {
   const navigate = useNavigate();
   const { signupData: formData, setSignupData: setFormData } = useSignup();
   const { updateUser } = useContext(UserContext);
 
   const [showPassword, setShowPassword] = useState(false);
   const [acceptedTerms, setAcceptedTerms] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
   const [errors, setErrors] = useState({
     email: "",
     name: "",
@@ -28,35 +30,38 @@ const SignUp = () => {
     confirmPassword: "",
   });
 
+  // ✅ Validation
   const validate = () => {
-    const newErrors = {
-      email: "",
-      name: "",
-      password: "",
-      confirmPassword: "",
-    };
+    const newErrors = { email: "", name: "", password: "", confirmPassword: "" };
 
     if (!formData.name.trim()) newErrors.name = "Name is required";
+    if (!formData.email.trim()) newErrors.email = "Email is required";
+    else if (!/\S+@\S+\.\S+/.test(formData.email))
+      newErrors.email = "Invalid email format";
 
-    const { password, confirmPassword } = formData;
+    if (!formData.password) newErrors.password = "Password is required";
+    else if (formData.password.length < 6)
+      newErrors.password = "Password must be at least 6 characters";
 
-    if (password !== confirmPassword)
+    if (formData.password !== formData.confirmPassword)
       newErrors.confirmPassword = "Passwords do not match";
 
     setErrors(newErrors);
     return Object.values(newErrors).every((err) => err === "");
   };
 
+  // ✅ Submit
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     if (!validate()) return;
+
     if (!acceptedTerms) {
       toast.error("You must accept the terms and conditions.");
       return;
     }
 
     try {
+      setIsLoading(true);
       const response = await axiosInstance.post(API_PATHS.AUTH.REGISTER, {
         name: formData.name,
         email: formData.email,
@@ -67,7 +72,7 @@ const SignUp = () => {
 
       if (token) {
         localStorage.setItem("token", token);
-        updateUser(user); // Assuming user is sent separatel
+        updateUser(user);
         toast.success("Account created successfully!");
         navigate("/");
       }
@@ -77,6 +82,8 @@ const SignUp = () => {
       } else {
         toast.error("Something went wrong. Please try again.");
       }
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -85,7 +92,7 @@ const SignUp = () => {
 
   return (
     <div className="bg-gray-50 min-h-screen flex items-center justify-center px-4 py-10">
-      <Card className="w-full max-w-md shadow-md ">
+      <Card className="w-full max-w-md shadow-lg rounded-2xl">
         <CardHeader className="text-center space-y-2">
           <Link
             to="/"
@@ -101,56 +108,50 @@ const SignUp = () => {
           <form onSubmit={handleSubmit} className="space-y-4">
             {/* Name */}
             <div>
-              <Label htmlFor="name" className="text-base font-medium">
-                Full Name
-              </Label>
+              <Label htmlFor="name">Full Name</Label>
               <div className="relative">
-                <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-600 h-5 w-5" />
+                <User className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-600 h-5 w-5" />
                 <Input
                   id="name"
                   type="text"
                   value={formData.name}
                   onChange={handleChange("name")}
                   placeholder="Enter your full name"
-                  className="pl-10 border border-gray-300"
+                  className="pl-10"
                 />
               </div>
-              {errors.name && (
-                <p className="text-red-500 text-sm">{errors.name}</p>
-              )}
+              {errors.name && <p className="text-red-500 text-sm">{errors.name}</p>}
             </div>
 
             {/* Email */}
             <div>
               <Label htmlFor="email">Email</Label>
               <div className="relative">
-                <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-600 h-5 w-6" />
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-600 h-5 w-6" />
                 <Input
                   id="email"
                   type="email"
                   value={formData.email}
                   onChange={handleChange("email")}
                   placeholder="Enter your email"
-                  className="pl-10 border-gray-400"
+                  className="pl-10"
                 />
               </div>
-              {errors.email && (
-                <p className="text-red-500 text-sm">{errors.email}</p>
-              )}
+              {errors.email && <p className="text-red-500 text-sm">{errors.email}</p>}
             </div>
 
             {/* Password */}
             <div>
               <Label htmlFor="password">Password</Label>
               <div className="relative">
-                <LockKeyhole className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-600 h-5 w-6" />
+                <LockKeyhole className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-600 h-5 w-6" />
                 <Input
                   id="password"
                   type={showPassword ? "text" : "password"}
                   value={formData.password}
                   onChange={handleChange("password")}
                   placeholder="Enter your password"
-                  className="pl-10 border-gray-400"
+                  className="pl-10"
                 />
                 <Button
                   type="button"
@@ -159,16 +160,10 @@ const SignUp = () => {
                   className="absolute right-0 top-0 h-full px-3"
                   onClick={() => setShowPassword((prev) => !prev)}
                 >
-                  {showPassword ? (
-                    <EyeOff className="h-4 w-4" />
-                  ) : (
-                    <Eye className="h-4 w-4" />
-                  )}
+                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 </Button>
               </div>
-              {errors.password && (
-                <p className="text-red-500 text-sm">{errors.password}</p>
-              )}
+              {errors.password && <p className="text-red-500 text-sm">{errors.password}</p>}
             </div>
 
             {/* Confirm Password */}
@@ -180,7 +175,7 @@ const SignUp = () => {
                 value={formData.confirmPassword}
                 onChange={handleChange("confirmPassword")}
                 placeholder="Re-enter your password"
-                className="border-gray-400 pl-10"
+                className="pl-10"
               />
               {errors.confirmPassword && (
                 <p className="text-red-500 text-sm">{errors.confirmPassword}</p>
@@ -193,9 +188,9 @@ const SignUp = () => {
                 id="terms"
                 checked={acceptedTerms}
                 onCheckedChange={() => setAcceptedTerms((prev) => !prev)}
-                className="cursor-pointer font-semibold"
+                className="cursor-pointer"
               />
-              <p className="text-sm font-normal">
+              <p className="text-sm">
                 By creating and/or using your account, you agree to our{" "}
                 <span className="text-blue-600 hover:underline cursor-pointer">
                   Terms of Use
@@ -211,17 +206,22 @@ const SignUp = () => {
             <Button
               type="submit"
               className="w-full mt-4 bg-amber-500 hover:bg-amber-600 text-white font-semibold"
+              disabled={isLoading}
             >
-              Sign Up
+              {isLoading ? "Creating Account..." : "Sign Up"}
             </Button>
           </form>
 
-          <p className="mt-6 text-sm text-gray-900">
-            Already have an account?{" "}
-            <Link to="/auth/signin" className="text-blue-600 hover:underline">
-              Log In
-            </Link>
-          </p>
+         <p className="mt-6 text-center text-sm">
+  Already have an account?{" "}
+  <button
+    type="button"
+    className="text-blue-600 hover:underline"
+    onClick={switchToLogin}
+  >
+    Log In
+  </button>
+</p>
         </CardContent>
       </Card>
     </div>
