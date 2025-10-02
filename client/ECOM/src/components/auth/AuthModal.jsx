@@ -9,7 +9,7 @@ const AuthModal = ({ open, onClose, children, title }) => {
       onClick={onClose}
     >
       <div
-        className="bg-[#ffff] rounded-2xl shadow-2xl w-full max-w-md p-6 relative "
+        className="bg-[#ffff] rounded-2xl shadow-2xl w-full max-w-md p-6 relative  max-h-[90vh] overflow-y-auto scrollbar-hide"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Close Button */}
@@ -21,7 +21,7 @@ const AuthModal = ({ open, onClose, children, title }) => {
         </button>
 
         {/* Title */}
-        <h2 className="text-center text-2xl font-bold mb-6 text-gray-800">{title}</h2>
+        {/* <h2 className="text-center text-2xl font-bold mb-6 text-gray-800">{title}</h2> */}
 
         {/* Children (Login / SignUp forms) */}
         <div className="space-y-4">{children}</div>

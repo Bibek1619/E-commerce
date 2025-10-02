@@ -4,16 +4,16 @@ import { Eye, EyeOff } from "lucide-react";
 import { toast } from "react-hot-toast";
 
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import axiosInstance from "@/utils/axiosInstance";
 import { API_PATHS } from "@/utils/apiPaths";
 import { UserContext } from "@/components/providers/userProvider";
 
-const Login = ({ onSuccess,switchToSignup }) => {
+const Login = ({ onSuccess, switchToSignup }) => {
   const navigate = useNavigate();
-  const { refreshUser } = useContext(UserContext); 
+  const { refreshUser } = useContext(UserContext);
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({ email: "", password: "" });
@@ -36,14 +36,11 @@ const Login = ({ onSuccess,switchToSignup }) => {
       await refreshUser();
       toast.success("Signed in successfully!");
 
-      // ✅ close modal if inside one
       if (onSuccess) {
         onSuccess();
       } else {
-        // ✅ fallback: redirect normally if no modal
         navigate("/");
       }
-
     } catch (error) {
       console.error("Login error:", error);
       localStorage.removeItem("token");
@@ -59,13 +56,16 @@ const Login = ({ onSuccess,switchToSignup }) => {
   };
 
   return (
-    <Card className="w-full max-w-md shadow-md bg-[#796e56]">
-    
-      <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-4">
+    <Card className="w-full max-w-md shadow-2xl border border-gray-200 rounded-2xl bg-white">
+      <CardContent className="p-6">
+        <h2 className="text-center text-2xl font-bold mb-6 bg-gradient-to-r from-orange-500 to-red-400 text-transparent bg-clip-text">
+          Sign In
+        </h2>
+
+        <form onSubmit={handleSubmit} className="space-y-5">
           {/* Email */}
           <div>
-            <Label htmlFor="email">Email</Label>
+            <Label htmlFor="email" className="text-gray-700">Email</Label>
             <Input
               id="email"
               type="email"
@@ -74,42 +74,41 @@ const Login = ({ onSuccess,switchToSignup }) => {
                 setFormData({ ...formData, email: e.target.value })
               }
               required
+              className="mt-1 border-gray-300 focus:ring-orange-500 focus:border-orange-500 text-gray-900"
             />
           </div>
 
           {/* Password */}
-          <div>
-            <Label htmlFor="password">Password</Label>
-            <div className="relative">
-              <Input
-                id="password"
-                type={showPassword ? "text" : "password"}
-                value={formData.password}
-                onChange={(e) =>
-                  setFormData({ ...formData, password: e.target.value })
-                }
-                required
-              />
-              <Button
-                type="button"
-                variant="ghost"
-                size="sm"
-                className="absolute right-0 top-0 h-full px-3"
-                onClick={() => setShowPassword(!showPassword)}
-              >
-                {showPassword ? (
-                  <EyeOff className="h-4 w-4" />
-                ) : (
-                  <Eye className="h-4 w-4" />
-                )}
-              </Button>
-            </div>
-          </div>
+         <div>
+  <Label htmlFor="password" className="text-gray-700">Password</Label>
+  <div className="relative mt-1">
+    <Input
+      id="password"
+      type={showPassword ? "text" : "password"}
+      value={formData.password}
+      onChange={(e) =>
+        setFormData({ ...formData, password: e.target.value })
+      }
+      required
+      className="pr-12 border-gray-300 focus:ring-orange-500 focus:border-orange-500 text-gray-900"
+    />
+    <Button
+      type="button"
+      variant="ghost"
+      size="sm"
+      className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-800"
+      onClick={() => setShowPassword(!showPassword)}
+    >
+      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+    </Button>
+  </div>
+</div>
+
 
           {/* Submit */}
           <Button
             type="submit"
-            className="w-full bg-orange-400 hover:bg-orange-500"
+            className="w-full rounded-lg bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-semibold shadow-md"
             disabled={isLoading}
           >
             {isLoading ? "Signing In..." : "Sign In"}
@@ -125,16 +124,16 @@ const Login = ({ onSuccess,switchToSignup }) => {
           >
             Forgot your password?
           </button>
-          <p className="mt-4 text-center text-sm">
-  Don't have an account?{" "}
-  <button
-    type="button"
-    className="text-orange-500 hover:underline"
-    onClick={switchToSignup}
-  >
-    Sign Up
-  </button>
-</p>
+          <p className="mt-4 text-sm text-gray-600">
+            Don't have an account?{" "}
+            <button
+              type="button"
+              className="text-orange-500 font-medium hover:underline"
+              onClick={switchToSignup}
+            >
+              Sign Up
+            </button>
+          </p>
         </div>
       </CardContent>
     </Card>
