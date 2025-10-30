@@ -115,74 +115,121 @@ export default function ProductMain({
           </Card>
         )}
 
-        {/* Variants: Size */}
-        {product.variants?.length > 0 && (
-          <div className="space-y-4">
-            <div>
-              <label className="text-sm font-medium">Select Size</label>
-              <div className="flex gap-2 flex-wrap">
-                {[...new Set(product.variants.map(v => v.size))].map(size => {
-                  const available = product.variants.some(v => v.size === size && v.stock > 0);
-                  return (
-                    <Button
-                      key={size}
-                      variant={selectedSize === size ? "default" : "outline"}
-                      size="sm"
-                      onClick={() => {
-                        setSelectedSize(size);
-                        setSelectedColor(""); 
-                      }}
-                      disabled={!available}
-                    >
-                      {size}
-                    </Button>
-                  );
-                })}
-              </div>
-            </div>
+{/* Variants: Size & Color */}
+{product.variants?.length > 0 && (
+  <div className="space-y-5">
+    {/* Select Size */}
+    <div>
+      <label className="text-sm font-medium text-gray-900">Select Size</label>
+      <div className="flex gap-2 flex-wrap mt-2">
+        {[...new Set(product.variants.map(v => v.size))].map(size => {
+          const available = product.variants.some(v => v.size === size && v.stock > 0);
+          const isSelected = selectedSize === size;
 
-            {/* Variants: Color */}
-            {selectedSize && (
-              <div>
-                <label className="text-sm font-medium">Select Color</label>
-                <div className="flex gap-2 flex-wrap">
-                  {product.variants.filter(v => v.size === selectedSize).map(v => (
-                    <Button
-                      key={v.color}
-                      variant={selectedColor === v.color ? "default" : "outline"}
-                      size="sm"
-                      onClick={() => setSelectedColor(v.color)}
-                      disabled={v.stock === 0}
-                    >
-                      {v.color} ({v.stock})
-                    </Button>
-                  ))}
-                </div>
-                {selectedColor && (
-                  <p className="text-sm text-green-600 mt-2">
-                    {product.variants.find(v => v.size === selectedSize && v.color === selectedColor)?.stock}{" "}
-                    item(s) available in this size and color
-                  </p>
-                )}
-              </div>
-            )}
-          </div>
-        )}
+          return (
+            <button
+              key={size}
+              onClick={() => {
+                setSelectedSize(size);
+                setSelectedColor("");
+              }}
+              disabled={!available}
+              className={`px-4 py-2 text-sm rounded-md border transition-all duration-150
+                ${
+                  isSelected
+                    ? "bg-blue-600 text-white border-blue-600"
+                    : "bg-white text-gray-800 border-gray-300 hover:border-blue-500 hover:text-blue-600"
+                }
+                ${!available ? "opacity-50 cursor-not-allowed" : ""}
+              `}
+            >
+              {size}
+            </button>
+          );
+        })}
+      </div>
+    </div>
 
-        {/* Quantity */}
-        <div className="space-y-2">
-          <label className="text-sm font-medium">Quantity</label>
-          <Select value={quantity.toString()} onValueChange={(val) => setQuantity(parseInt(val))}>
-            <SelectTrigger className="w-20">
-              <SelectValue placeholder="1" />
-            </SelectTrigger>
-            <SelectContent>
-              {[...Array(Math.min(10, product.stock || 5))].map((_, i) => (
-                <SelectItem key={i + 1} value={(i + 1).toString()}>{i + 1}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+    {/* Select Color */}
+    {selectedSize && (
+      <div>
+        <label className="text-sm font-medium text-gray-900">Select Color</label>
+        <div className="flex gap-2 flex-wrap mt-2">
+          {product.variants
+            .filter(v => v.size === selectedSize)
+            .map(v => {
+              const isSelected = selectedColor === v.color;
+              return (
+                <button
+                  key={v.color}
+                  onClick={() => setSelectedColor(v.color)}
+                  disabled={v.stock === 0}
+                  className={`px-4 py-2 text-sm rounded-md border transition-all duration-150
+                    ${
+                      isSelected
+                        ? "bg-blue-600 text-white border-blue-600"
+                        : "bg-white text-gray-800 border-gray-300 hover:border-blue-500 hover:text-blue-600"
+                    }
+                    ${v.stock === 0 ? "opacity-50 cursor-not-allowed" : ""}
+                  `}
+                >
+                  {v.color}{" "}
+                  <span className="text-xs text-gray-500 ml-1">
+                    ({v.stock})
+                  </span>
+                </button>
+              );
+            })}
         </div>
+
+        {selectedColor && (
+          <p className="text-sm text-green-600 mt-2">
+            {
+              product.variants.find(
+                v => v.size === selectedSize && v.color === selectedColor
+              )?.stock
+            }{" "}
+            item(s) available in this size and color
+          </p>
+        )}
+      </div>
+    )}
+  </div>
+)}
+
+
+<div className="space-y-2">
+  <label className="text-sm font-medium text-gray-900">Quantity</label>
+  <Select
+    value={quantity.toString()}
+    onValueChange={(val) => setQuantity(parseInt(val))}
+  >
+    <SelectTrigger
+      className="w-24 rounded-md border border-gray-300 bg-white text-gray-800
+                 focus:ring-2 focus:ring-blue-500 focus:border-blue-500
+                 hover:border-blue-500 transition-all duration-150"
+    >
+      <SelectValue placeholder="1" />
+    </SelectTrigger>
+
+    <SelectContent
+      className="rounded-md border border-gray-200 bg-white shadow-md"
+    >
+      {[...Array(Math.min(10, product.stock || 5))].map((_, i) => (
+        <SelectItem
+          key={i + 1}
+          value={(i + 1).toString()}
+          className="text-gray-800 hover:bg-blue-50 hover:text-blue-600 
+                     cursor-pointer transition-colors duration-150"
+        >
+          {i + 1}
+        </SelectItem>
+      ))}
+    </SelectContent>
+  </Select>
+</div>
+
+
 
         {/* Buttons */}
         <div className="space-y-3 pt-2">

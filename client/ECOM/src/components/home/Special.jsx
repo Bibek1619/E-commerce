@@ -1,4 +1,3 @@
-// pages/Special.jsx
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "../../utils/axiosInstance";
@@ -13,6 +12,7 @@ const Special = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    // **load products** //
     const fetchProducts = async () => {
       try {
         const res = await axiosInstance.get("/api/products");
@@ -25,7 +25,7 @@ const Special = () => {
   }, []);
 
   const handleAddToCartClick = (product) => {
-    if (loading) return; // Wait for user loading
+    if (loading) return;
     if (!user) {
       navigate("/auth/signin");
       return;
@@ -33,7 +33,6 @@ const Special = () => {
     setPopupProduct(product);
   };
 
-  // Render star ratings with half stars
   const renderStars = (rating) => {
     const stars = [];
     const fullStars = Math.floor(rating);
@@ -42,10 +41,7 @@ const Special = () => {
 
     for (let i = 0; i < fullStars; i++) {
       stars.push(
-        <Star
-          key={`full-${i}`}
-          className="w-4 h-4 fill-yellow-400 text-yellow-400"
-        />
+        <Star key={`full-${i}`} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
       );
     }
     if (hasHalfStar) {
@@ -65,100 +61,93 @@ const Special = () => {
       );
     }
     for (let i = 0; i < emptyStars; i++) {
-      stars.push(
-        <Star key={`empty-${i}`} className="w-4 h-4 text-gray-300" />
-      );
+      stars.push(<Star key={`empty-${i}`} className="w-4 h-4 text-gray-300" />);
     }
 
-    return (
-      <div
-        className="flex relative gap-0.5"
-        style={{ position: "relative", width: "fit-content" }}
-      >
-        {stars}
-      </div>
-    );
+    return <div className="flex relative gap-0.5">{stars}</div>;
   };
 
   return (
-    <div className="p-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-      {products.map((product) => (
-        <div
-          key={product._id}
-          className="border rounded p-4 shadow hover:shadow-lg relative bg-white"
-          onClick={() => navigate(`/product/${product._id}`)}
-        >
-          {/* Image container */}
-          <div className="relative">
-            <img
-              src={product.images?.[0] || product.image || "/placeholder.svg"}
-              alt={product.name}
-              className="h-40 w-full object-cover rounded"
-            />
+    <div className="p-6">
+      {/* 💬 Section heading */}
+      <h2 className="text-2xl font-bold mb-6 text-gray-800 text-center">
+        Products You May Like
+      </h2>
 
-            {/* Wishlist icon */}
-            <button
-              type="button"
-              title="Add to wishlist"
-              className="absolute top-2 right-10 bg-white p-1 rounded-full shadow hover:bg-red-100"
-              onClick={(e) =>{
-                e.stopPropagation();
-                
-                
-                alert("Wishlist clicked")}
-              }
-            >
-              <Heart className="w-5 h-5 text-gray-600 hover:text-red-500" />
-            </button>
+      {/* 🛍 Product grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        {products.map((product) => (
+          <div
+            key={product._id}
+            className="border rounded p-4 shadow hover:shadow-lg relative bg-white"
+            onClick={() => navigate(`/product/${product._id}`)}
+          >
+            <div className="relative">
+              <img
+                src={product.images?.[0] || product.image || "/placeholder.svg"}
+                alt={product.name}
+                className="h-40 w-full object-cover rounded"
+              />
 
-            {/* Cart icon */}
-            <button
-              type="button"
-              title="Add to cart"
-              className="absolute top-2 right-2 bg-white p-1 rounded-full shadow hover:bg-green-100"
-             onClick={(e) => {
-        e.stopPropagation(); // 👈 stop naviga
-        handleAddToCartClick(product);
-      }}
-            >
-              <ShoppingCart className="w-5 h-5 text-gray-600 hover:text-green-600" />
-            </button>
-          </div>
+              {/* Wishlist */}
+              <button
+                type="button"
+                title="Add to wishlist"
+                className="absolute top-2 right-10 bg-white p-1 rounded-full shadow hover:bg-red-100"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  alert("Wishlist clicked");
+                }}
+              >
+                <Heart className="w-5 h-5 text-gray-600 hover:text-red-500" />
+              </button>
 
-          {/* Product name */}
-          <h3 className="text-lg font-semibold mt-3 line-clamp-2">
-            {product.name}
-          </h3>
+              {/* Cart */}
+              <button
+                type="button"
+                title="Add to cart"
+                className="absolute top-2 right-2 bg-white p-1 rounded-full shadow hover:bg-green-100"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleAddToCartClick(product);
+                }}
+              >
+                <ShoppingCart className="w-5 h-5 text-gray-600 hover:text-green-600" />
+              </button>
+            </div>
 
-          {/* Price and discounted price */}
-          <div className="mt-1">
-            {product.discountedPrice && product.discountedPrice < product.price ? (
-              <div>
+            <h3 className="text-lg font-semibold mt-3 line-clamp-2">
+              {product.name}
+            </h3>
+
+            <div className="mt-1">
+              {product.discountedPrice && product.discountedPrice < product.price ? (
+                <div>
+                  <span className="text-orange-600 font-bold text-lg">
+                    Rs. {product.discountedPrice.toLocaleString()}
+                  </span>
+                  <span className="text-gray-400 line-through ml-2">
+                    Rs. {product.price.toLocaleString()}
+                  </span>
+                </div>
+              ) : (
                 <span className="text-orange-600 font-bold text-lg">
-                  Rs. {product.discountedPrice.toLocaleString()}
-                </span>
-                <span className="text-gray-400 line-through ml-2">
                   Rs. {product.price.toLocaleString()}
                 </span>
-              </div>
-            ) : (
-              <span className="text-orange-600 font-bold text-lg">
-                Rs. {product.price.toLocaleString()}
+              )}
+            </div>
+
+            <div className="flex items-center gap-1 mt-2">
+              {renderStars(product.ratings || 0)}
+              <span className="text-sm text-gray-600">
+                ({product.reviews?.length || 0})
               </span>
-            )}
+            </div>
           </div>
+        ))}
+      </div>
 
-          {/* Rating stars and review count */}
-          <div className="flex items-center gap-1 mt-2">
-            {renderStars(product.ratings || 0)}
-            <span className="text-sm text-gray-600">
-              ({product.reviews?.length || 0})
-            </span>
-          </div>
-        </div>
-      ))}
-
-      {/* Cart popup */}
+      {/* 🧾 Cart popup */}
       {popupProduct && (
         <CartPopup product={popupProduct} onClose={() => setPopupProduct(null)} />
       )}

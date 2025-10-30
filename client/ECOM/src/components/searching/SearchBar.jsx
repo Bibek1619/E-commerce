@@ -43,7 +43,7 @@ export default function SearchBar() {
           placeholder="Search products..."
           className="border px-3 py-2 rounded w-full"
         />
-        <button type="submit" className="bg-orange-500 text-white px-4 py-2 rounded">
+        <button type="submit" className="bg-amber-600 text-white px-4 py-2 rounded hover:bg-amber-500 cursor-pointer">
           Search
         </button>
       </form>

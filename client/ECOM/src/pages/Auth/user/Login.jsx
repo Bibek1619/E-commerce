@@ -33,7 +33,7 @@ const Login = ({ onSuccess, switchToSignup }) => {
       const { token } = response.data;
       localStorage.setItem("token", token);
 
-      await refreshUser();
+      await refreshUser();// Refresh user context after login
       toast.success("Signed in successfully!");
 
       if (onSuccess) {

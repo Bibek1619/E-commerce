@@ -13,6 +13,7 @@ const Header = () => {
   const cartCount = items.length;
 
   const categories = [
+    "All",
     "Traditional Clothes",
     "Food-Item",
     "Furniture",
@@ -46,7 +47,7 @@ const Header = () => {
         {/* Logo */}
         <Link
           to="/"
-          className="flex items-center gap-2 text-2xl font-bold text-orange-400 flex-shrink-0"
+          className="flex items-center gap-2 text-2xl font-bold text-amber-600 flex-shrink-0"
         >
           <img src="/images/nepal-01-1.svg" alt="logo" className="h-10 w-10" />
           NepaliBazar

@@ -70,7 +70,7 @@ const SellerReg = () => {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-indigo-50 px-4">
       <div className="w-full max-w-md bg-white p-6 rounded-xl shadow-lg">
         <div className="text-center mb-6">
-          <div className="inline-flex items-center justify-center w-14 h-14 bg-blue-600 rounded-full mb-3">
+          <div className="inline-flex items-center justify-center w-14 h-14 bg-amber-400 rounded-full mb-3">
             <Store className="w-7 h-7 text-white" />
           </div>
           <h1 className="text-2xl font-bold text-gray-900">Create Seller Account</h1>
@@ -147,7 +147,7 @@ const SellerReg = () => {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-blue-600 text-white py-2 rounded-lg font-semibold hover:bg-blue-700 transition disabled:opacity-50"
+            className="w-full bg-amber-600 text-white py-2 rounded-lg font-semibold hover:bg-amber-500 transition disabled:opacity-50 cursor-pointer"
           >
             {loading ? "Creating Shop..." : "Register as Seller"}
           </button>
@@ -155,7 +155,7 @@ const SellerReg = () => {
 
         <p className="mt-4 text-center text-gray-600 text-sm">
           Already have an account?{" "}
-          <Link to="/signin?role=seller" className="text-blue-600 hover:underline">
+          <Link to="/signin?role=seller" className="text-amber-600 hover:underline">
             Sign in
           </Link>
         </p>

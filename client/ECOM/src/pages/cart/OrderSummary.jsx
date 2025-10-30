@@ -1,71 +1,57 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
-import { useCart } from "@/components/providers/cart-provider";
+import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import  {Card, CardHeader, CardContent, CardTitle } from "@/components/ui/Card";
+import { useNavigate } from "react-router-dom";
+import { CreditCard } from "lucide-react";
 
 export default function OrderSummary({ selectedItems }) {
-  const { isLoggedIn } = useCart();
-  const [promoCode, setPromoCode] = useState("");
+  const navigate = useNavigate();
 
-  const selectedTotal = selectedItems.reduce(
+  // Calculate totals
+  const subtotal = selectedItems.reduce(
     (sum, item) => sum + item.price * item.quantity,
     0
   );
+  const shipping = 150; // fixed shipping
+  const total = subtotal + shipping;
 
-  const shipping = 150;
-  const tax = selectedTotal * 0.13;
-  const finalTotal = selectedTotal + shipping + tax;
+  const handleCheckout = () => {
+    if (selectedItems.length === 0) return;
+
+    // Store selected items in sessionStorage for CheckoutPage
+    sessionStorage.setItem("checkoutItems", JSON.stringify(selectedItems));
+    navigate("/checkout");
+  };
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Order Summary</CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="flex justify-between">
-          <span>Subtotal (Selected Items)</span>
-          <span>Rs. {selectedTotal.toLocaleString()}</span>
-        </div>
-        <div className="flex justify-between">
-          <span>Shipping</span>
-          <span>Rs. {shipping.toLocaleString()}</span>
-        </div>
-        <div className="flex justify-between">
-          <span>Tax (13%)</span>
-          <span>Rs. {tax.toFixed(0)}</span>
-        </div>
-        <div className="border-t pt-4">
-          <div className="flex justify-between font-bold text-lg">
-            <span>Total</span>
-            <span>Rs. {finalTotal.toFixed(0)}</span>
-          </div>
-        </div>
+    // ** Order Summary Card **//
+    <Card className="p-6 shadow-md sticky top-10">
+      <h2 className="text-xl font-semibold mb-4">Order Summary</h2>
 
-        <div className="space-y-2">
-          <input
-            type="text"
-            placeholder="Enter promo code"
-            value={promoCode}
-            onChange={(e) => setPromoCode(e.target.value)}
-            className="w-full p-2 border rounded"
-          />
-          <Button className="w-full bg-transparent border border-orange-400 text-orange-500 hover:bg-orange-100">
-            Apply Code
-          </Button>
-        </div>
+      <div className="flex justify-between text-sm mb-2">
+        <span>Subtotal</span>
+        <span>Rs. {subtotal.toLocaleString()}</span>
+      </div>
 
-        <Button
-          className={`w-full text-white ${
-            isLoggedIn
-              ? "bg-orange-400 hover:bg-orange-500"
-              : "bg-gray-400 cursor-not-allowed"
-          }`}
-          disabled={!isLoggedIn || selectedItems.length === 0}
-        >
-          <Link to={isLoggedIn ? "/checkout" : "#"}>Proceed to Checkout</Link>
-        </Button>
-      </CardContent>
+      <div className="flex justify-between text-sm mb-2">
+        <span>Shipping</span>
+        <span className="text-green-600">Rs. {shipping.toLocaleString()}</span>
+      </div>
+
+      <hr className="my-4" />
+
+      <div className="flex justify-between text-lg font-bold">
+        <span>Total</span>
+        <span>Rs. {total.toLocaleString()}</span>
+      </div>
+
+      <Button
+        className="w-full mt-6 flex items-center gap-2 bg-orange-400 hover:bg-orange-500 text-white"
+        onClick={handleCheckout}
+        disabled={selectedItems.length === 0}
+      >
+        <CreditCard className="w-5 h-5" />
+        Proceed to Checkout
+      </Button>
     </Card>
   );
 }

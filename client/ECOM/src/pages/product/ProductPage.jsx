@@ -50,14 +50,20 @@ const handleAddToCart = () => {
   const variant = product.variants.find(v => v.size === selectedSize && v.color === selectedColor);
   if (!variant || variant.stock < quantity) return toast.error("Not enough stock");
 
-  for (let i = 0; i < quantity; i++) {
-    addItem({
-      id: `${product._id}-${selectedSize}-${selectedColor}`,
-      name: `${product.name} (${selectedSize}, ${selectedColor})`,
-      price: variant.price,
-      image: product.images?.[0],
-    });
-  }
+
+ addItem({
+  _id: `${product._id}-${selectedSize}-${selectedColor}`, // unique cart key
+  productId: product._id,  // **must have for checkout**
+  name: `${product.name} (${selectedSize}, ${selectedColor})`,
+  price: variant.price,
+  image: product.images?.[0],
+  size: selectedSize,
+  color: selectedColor,
+  quantity,
+});
+
+
+
   toast.success(`${quantity} item(s) added to cart`);
 };
 
@@ -78,14 +84,20 @@ const handleBuyNow = () => {
   }
 
   // send to buyNow
-  buyNowItem({
-    id: variant ? `${product._id}-${selectedSize}-${selectedColor}` : product._id,
-    name: variant
-      ? `${product.name} (${selectedSize}, ${selectedColor})`
-      : product.name,
-    price: variant?.price || product.price,
-    image: product.images?.[0],
-  });
+buyNowItem({
+  _id: product._id,
+  productId: product._id,  // **must have**
+  name: variant
+    ? `${product.name} (${selectedSize}, ${selectedColor})`
+    : product.name,
+  price: variant?.price || product.price,
+  image: product.images?.[0],
+  quantity,
+  size: selectedSize,
+  color: selectedColor,
+});
+
+
 
   navigate("/checkout?buyNow=true");
 };

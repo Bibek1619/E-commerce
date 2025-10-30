@@ -52,7 +52,18 @@ export const CartProvider = ({ children }) => {
           )
         );
       } else {
-        setItems((prev) => [...prev, { ...product, quantity }]);
+       setItems((prev) => [
+  ...prev,
+  { 
+    ...product,
+_id: product._id,
+   
+    productId: product._id,
+     // <-- ADD THIS
+      quantity,
+  }
+]);
+
       }
     } catch (err) {
       console.error(err);
@@ -107,7 +118,14 @@ const updateQuantity = async (productId, quantity) => {
       toast.error("Please login to buy products");
       return;
     }
-    setBuyNow({ ...product, quantity });
+   setBuyNow({
+  ...product,
+  quantity,
+  productId: product._id ,
+  // <-- ADD THIS
+  _id: product._id
+});
+
   };
   return (
     <CartContext.Provider

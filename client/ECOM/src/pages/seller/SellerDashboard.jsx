@@ -70,12 +70,22 @@ export default function SellerDashboard() {
     }
   }, [loading, seller]);
 
-  if (loading)
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        Loading...
-      </div>
-    );
+ if (loading) {
+  return (
+    <div className="flex items-center justify-center min-h-screen">
+      Loading...
+    </div>
+  );
+}
+
+if (!seller) {
+  return (
+    <div className="flex items-center justify-center min-h-screen">
+      No seller data found.
+    </div>
+  );
+}
+
 
   const handleLogout = () => {
     localStorage.removeItem("token");

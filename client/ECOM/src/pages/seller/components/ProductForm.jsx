@@ -371,7 +371,7 @@ const removeSpec = (idx) => setSpecifications(specifications.filter((_, i) => i 
               {(price || discountedPrice) && (
                 <div className="flex items-center gap-2">
                   {discountedPrice && <span className="font-bold text-green-600">${discountedPrice}</span>}
-                  <span className={discountedPrice ? "line-through text-gray-500" : "font-bold"}>${price}</span>
+                  <span className={discountedPrice ? "line-through text-gray-500" : "font-bold"}>Rs {price}</span>
                 </div>
               )}
               {description && <p className="text-sm text-gray-700 line-clamp-3">{description}</p>}
