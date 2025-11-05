@@ -3,9 +3,9 @@ import { useNavigate } from "react-router-dom";
 import axiosInstance from "../../utils/axiosInstance";
 import CartPopup from "../../components/box/CartPopup";
 import { Heart, ShoppingCart, Star } from "lucide-react";
-import { useUser } from "../providers/userProvider"; // Adjust path if needed
+import { useUser } from "../providers/userProvider";
 
-const Special = () => {
+const Recommend = () => {
   const [products, setProducts] = useState([]);
   const [popupProduct, setPopupProduct] = useState(null);
   const { user, loading } = useUser();
@@ -15,7 +15,7 @@ const Special = () => {
     const fetchProducts = async () => {
       try {
         const res = await axiosInstance.get("/api/products");
-        setProducts(res.data);
+        setProducts(res.data.slice(0, 6));
       } catch (err) {
         console.error("Error loading products:", err);
       }
@@ -68,13 +68,12 @@ const Special = () => {
 
   return (
     <div className="p-4">
-      {/* Section heading */}
       <h2 className="text-2xl font-bold mb-6 text-gray-800 text-center">
-        Products You May Like
+        Recommended Products
       </h2>
 
-      {/* Product grid: 2 per row on mobile, 2 on sm, 3 on md, 4 on lg */}
-      <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+      {/* Grid: 3 per row even on mobile */}
+      <div className="grid grid-cols-3 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 gap-4">
         {products.map((product) => (
           <div
             key={product._id}
@@ -85,10 +84,9 @@ const Special = () => {
               <img
                 src={product.images?.[0] || product.image || "/placeholder.svg"}
                 alt={product.name}
-                className="h-28 sm:h-36 md:h-40 w-full object-cover rounded"
+                className="h-24 w-full object-cover rounded"
               />
 
-              {/* Wishlist */}
               <button
                 type="button"
                 title="Add to wishlist"
@@ -98,10 +96,9 @@ const Special = () => {
                   alert("Wishlist clicked");
                 }}
               >
-                <Heart className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600 hover:text-red-500" />
+                <Heart className="w-4 h-4 text-gray-600 hover:text-red-500" />
               </button>
 
-              {/* Cart */}
               <button
                 type="button"
                 title="Add to cart"
@@ -111,26 +108,26 @@ const Special = () => {
                   handleAddToCartClick(product);
                 }}
               >
-                <ShoppingCart className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600 hover:text-green-600" />
+                <ShoppingCart className="w-4 h-4 text-gray-600 hover:text-green-600" />
               </button>
             </div>
 
-            <h3 className="text-sm sm:text-base font-semibold mt-2 line-clamp-2">
+            <h3 className="text-sm font-semibold mt-2 line-clamp-2">
               {product.name}
             </h3>
 
             <div className="mt-1">
               {product.discountedPrice && product.discountedPrice < product.price ? (
                 <div>
-                  <span className="text-orange-600 font-bold text-sm sm:text-lg">
+                  <span className="text-orange-600 font-bold text-sm">
                     Rs. {product.discountedPrice.toLocaleString()}
                   </span>
-                  <span className="text-gray-400 line-through ml-1 text-xs sm:text-sm">
+                  <span className="text-gray-400 line-through ml-1 text-xs">
                     Rs. {product.price.toLocaleString()}
                   </span>
                 </div>
               ) : (
-                <span className="text-orange-600 font-bold text-sm sm:text-lg">
+                <span className="text-orange-600 font-bold text-sm">
                   Rs. {product.price.toLocaleString()}
                 </span>
               )}
@@ -138,7 +135,7 @@ const Special = () => {
 
             <div className="flex items-center gap-1 mt-1">
               {renderStars(product.ratings || 0)}
-              <span className="text-xs sm:text-sm text-gray-600">
+              <span className="text-xs text-gray-600">
                 ({product.reviews?.length || 0})
               </span>
             </div>
@@ -146,7 +143,6 @@ const Special = () => {
         ))}
       </div>
 
-      {/* Cart popup */}
       {popupProduct && (
         <CartPopup product={popupProduct} onClose={() => setPopupProduct(null)} />
       )}
@@ -154,4 +150,4 @@ const Special = () => {
   );
 };
 
-export default Special;
+export default Recommend;

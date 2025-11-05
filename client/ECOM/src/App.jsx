@@ -16,6 +16,7 @@ import ProductPage from './pages/product/ProductPage';
 import SearchPage from './pages/search/SearchPage';
 import CheckoutPage from './pages/checkout/CheckoutPage';
 import OrderSuccess from './pages/sucess/OrderSuccess';
+import MyOrders from './pages/orders/MyOrders';
 
 const App = () => {
   return (
@@ -47,6 +48,10 @@ const App = () => {
 
               <Route path="/checkout" element={<CheckoutPage />} />
                <Route path="/order-success/:id" element={<OrderSuccess />} /> 
+
+
+             { /*my order*/}
+        <Route path="orders/my-orders" element={<MyOrders />} />
 
 
 

@@ -6,27 +6,32 @@ export const API_PATHS = {
     LOGIN: "/api/auth/login",
     GET_PROFILE: "/api/auth/profile",
   },
-  
+
   CART: {
     GET: "/api/cart",
     ADD: "/api/cart/add",
-UPDATE: (productId) => `/api/cart/update/${productId}`, 
+    UPDATE: (productId) => `/api/cart/update/${productId}`,
     REMOVE: (productId) => `/api/cart/remove/${productId}`,
   },
-  
+
   PRODUCT: {
-    GET_ALL: "/api/products",                          // GET all products
-    GET_BY_ID: (id) => `/api/products/${id}`,         // GET single product by ID
+    GET_ALL: "/api/products", // GET all products
+    GET_BY_ID: (id) => `/api/products/${id}`, // GET single product by ID
     GET_BY_CATEGORY: (category) => `/api/products/category/${category}`, // GET products by category
-    GET_CATEGORIES: "/api/products/categories",      // GET all categories
-    CREATE: "/api/products",                          // POST create product (protected)
-    UPDATE: (id) => `/api/products/${id}`,           // PUT update product (protected)
-    DELETE: (id) => `/api/products/${id}`,           // DELETE product (protected)
-    GET_MY_PRODUCTS: "/api/products/my-products",    // GET seller's own products (protected)
+    GET_CATEGORIES: "/api/products/categories", // GET all categories
+    CREATE: "/api/products", // POST create product (protected)
+    UPDATE: (id) => `/api/products/${id}`, // PUT update product (protected)
+    DELETE: (id) => `/api/products/${id}`, // DELETE product (protected)
+    GET_MY_PRODUCTS: "/api/products/my-products", // GET seller's own products (protected)
   },
   ORDER: {
-    CREATE: "/api/orders",                // POST create new order
+    CREATE: "/api/orders", // POST create new order
     GET_MY_ORDERS: "/api/orders/my-orders", // GET current user's orders
     GET_BY_ID: (id) => `/api/orders/${id}`, // GET single order by id
+    GET_SELLER_ORDERS: "/api/orders/seller", // 👈 NEW
+ UPDATE_STATUS: (id) => `/api/orders/${id}/status`,
+
+    CANCEL_ORDER: (id) => `/api/orders/cancel/${id}`,
+
   },
 };

@@ -28,7 +28,9 @@ function CheckoutPage() {
   // Redirect to login if not logged in
   useEffect(() => {
     if (!loading && !user) {
-      const redirectUrl = encodeURIComponent(location.pathname + location.search);
+      const redirectUrl = encodeURIComponent(
+        location.pathname + location.search
+      );
       navigate(`/auth/signin?redirect=${redirectUrl}`, { replace: true });
     }
   }, [user, loading, navigate, location]);
@@ -39,15 +41,32 @@ function CheckoutPage() {
     const isBuyNow = query.get("buyNow") === "true";
 
     // Check sessionStorage first (from CartPage)
-    const storedItems = sessionStorage.getItem("checkoutItems");
-    if (storedItems) {
-      setCheckoutItems(JSON.parse(storedItems));
-      sessionStorage.removeItem("checkoutItems"); // optional
-    } else if (isBuyNow && buyNow) {
-      setCheckoutItems([buyNow]);
-    } else {
-      setCheckoutItems(items);
-    }
+const storedItems = sessionStorage.getItem("checkoutItems");
+if (storedItems) {
+  const parsedItems = JSON.parse(storedItems).map((item) => ({
+    ...item,
+    _id:item._id || item.id, // ensure _id exists
+    productId: item.productId || item._id || item.id, // ensure productId exists
+  }));
+  setCheckoutItems(parsedItems);
+  sessionStorage.removeItem("checkoutItems");
+} else if (isBuyNow && buyNow) {
+  setCheckoutItems([
+    {
+      ...buyNow,
+       _id: buyNow._id || buyNow.id,
+      productId: buyNow.productId || buyNow._id || buyNow.id,
+    },
+  ]);
+} else {
+  const fixedItems = items.map((item) => ({
+    ...item,
+    _id: item._id || item.id,
+    productId: item.productId || item._id,
+  }));
+  setCheckoutItems(fixedItems);
+}
+
   }, [items, buyNow, location.search]);
 
   if (loading || !user || checkoutItems.length === 0) return null;
@@ -70,25 +89,33 @@ function CheckoutPage() {
       alert("Please fill in all shipping details!");
       return;
     }
-  // 🔹 Add this debug log here
-  console.log("checkoutItems before mapping:", checkoutItems);
-  checkoutItems.forEach(item => {
-    if (!item.productId) console.warn("Missing productId for item:", item);
-  });
+    // 🔹 Add this debug log here
+    console.log("checkoutItems before mapping:", checkoutItems);
+    checkoutItems.forEach((item) => {
+      if (!item.productId) console.warn("Missing productId for item:", item);
+    });
     try {
-      const itemsToSend = checkoutItems.map((item) => ({
-  product:  item.productId,  // ensure this is the Product _id
-  name: item.name,
-  price: item.price,
-  quantity: item.quantity,
-  image: item.image,
-}));
-   const missing = itemsToSend.filter((i) => !i.product);
-    if (missing.length > 0) {
-      console.error("Missing product IDs:", missing);
-      alert("Some items are missing Product IDs. Check console.");
-      return;
-    }
+   
+      const itemsToSend = checkoutItems.map((item) => {
+  const productId = item.productId || item._id; // fallback
+  if (!productId) {
+    console.error("Missing productId for item:", item);
+  }
+  return {
+    product: productId,
+    name: item.name,
+    price: item.price,
+    quantity: item.quantity,
+    image: item.image,
+  };
+});
+
+      const missing = itemsToSend.filter((i) => !i.product);
+      if (missing.length > 0) {
+        console.error("Missing product IDs:", missing);
+        alert("Some items are missing Product IDs. Check console.");
+        return;
+      }
       const response = await axiosInstance.post(API_PATHS.ORDER.CREATE, {
         items: itemsToSend,
         address,
@@ -96,7 +123,7 @@ function CheckoutPage() {
         total,
       });
 
-      navigate(`/order-success/${response.data._id}`);
+      navigate(`/order-success/${response.data.orders[0]._id}`); // navigate to order success page
     } catch (error) {
       alert(
         "❌ Failed to place order: " +
@@ -113,11 +140,7 @@ function CheckoutPage() {
           to="/"
           className="flex items-center gap-2 text-2xl font-bold text-orange-400"
         >
-          <img
-            src="/images/nepal-01-1.svg"
-            alt="logo"
-            className="h-10 w-10"
-          />
+          <img src="/images/nepal-01-1.svg" alt="logo" className="h-10 w-10" />
           NepaliBazar
         </Link>
       </div>

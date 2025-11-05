@@ -8,17 +8,17 @@ import { Link } from 'react-router-dom';
 const featuredSlideProducts = [
   {
     id: '1',
-    image: 'https://m.media-amazon.com/images/I/81hIlE5xocL._SX3000_.jpg',
+    image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQVsF_hDLhlXM-BJ2UO8VK_SXKO8uzNIeC7vf35zzCptVCAtLWWpUhvUtVGdkXjEBJDDOc&usqp=CAU',
     alt: 'Authentic Nepali Handicrafts',
   },
   {
     id: '2',
-    image: 'https://m.media-amazon.com/images/I/619geyiQI5L._SX3000_.jpg',
+    image: 'https://www.shutterstock.com/image-photo/colorful-wooden-masks-handicrafts-on-260nw-399519232.jpg',
     alt: 'Traditional Nepali Spices and Foods',
   },
   {
     id: '3',
-    image: 'https://m.media-amazon.com/images/I/619geyiQI5L._SX3000_.jpg',
+    image: 'https://www.shutterstock.com/image-photo/eco-organic-clothes-made-cannabis-600nw-1503818810.jpg',
     alt: 'Nepali Cultural Artifacts',
   },
 ];

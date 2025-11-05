@@ -198,36 +198,41 @@ export default function ProductMain({
 )}
 
 
+{/* Quantity */}
 <div className="space-y-2">
   <label className="text-sm font-medium text-gray-900">Quantity</label>
   <Select
     value={quantity.toString()}
     onValueChange={(val) => setQuantity(parseInt(val))}
   >
-    <SelectTrigger
-      className="w-24 rounded-md border border-gray-300 bg-white text-gray-800
+    <SelectTrigger className="w-24 rounded-md border border-gray-300 bg-white text-gray-800
                  focus:ring-2 focus:ring-blue-500 focus:border-blue-500
-                 hover:border-blue-500 transition-all duration-150"
-    >
+                 hover:border-blue-500 transition-all duration-150">
       <SelectValue placeholder="1" />
     </SelectTrigger>
 
-    <SelectContent
-      className="rounded-md border border-gray-200 bg-white shadow-md"
-    >
-      {[...Array(Math.min(10, product.stock || 5))].map((_, i) => (
-        <SelectItem
-          key={i + 1}
-          value={(i + 1).toString()}
-          className="text-gray-800 hover:bg-blue-50 hover:text-blue-600 
-                     cursor-pointer transition-colors duration-150"
-        >
-          {i + 1}
-        </SelectItem>
-      ))}
+    <SelectContent className="rounded-md border border-gray-200 bg-white shadow-md">
+      {(() => {
+        // Determine max quantity based on selected variant
+        const selectedVariant = product.variants?.find(
+          (v) => v.size === selectedSize && v.color === selectedColor
+        );
+        const maxQty = Math.min(10, selectedVariant?.stock || product.stock || 5);
+
+        return [...Array(maxQty)].map((_, i) => (
+          <SelectItem
+            key={i + 1}
+            value={(i + 1).toString()}
+            className="text-gray-800 hover:bg-blue-50 hover:text-blue-600 cursor-pointer transition-colors duration-150"
+          >
+            {i + 1}
+          </SelectItem>
+        ));
+      })()}
     </SelectContent>
   </Select>
 </div>
+
 
 
 

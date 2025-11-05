@@ -60,13 +60,16 @@ const getProducts = async (req, res) => {
 // 🔹 Get products of the logged-in seller
 const getSellerProducts = async (req, res) => {
   try {
+    console.log("Logged-in Seller ID:", req.user._id); // debug
     const products = await Product.find({ seller: req.user._id });
+  
     res.json(products);
   } catch (err) {
     console.error("❌ Error fetching seller products:", err);
     res.status(500).json({ message: "Failed to fetch products" });
   }
 };
+
 
 // 🔹 Get product by ID
 const getProductById = async (req, res) => {
@@ -141,18 +144,24 @@ const deleteProduct = async (req, res) => {
 };
 
 // 🔹 Get products by category (public)
+// 🔹 Get products by category (public)
 const getProductsByCategory = async (req, res) => {
   try {
-    const categories = req.params.category.includes(",")
-      ? req.params.category.split(",").map(c => c.trim())
-      : [req.params.category];
-    const products = await Product.find({ category: { $in: categories } });
+    const requestedCategory = req.params.category
+      .toLowerCase()
+      .replace(/-/g, " "); // replace dash with space
+
+    const products = await Product.find({
+      category: { $elemMatch: { $regex: requestedCategory, $options: "i" } }
+    });
+
     res.json(products);
   } catch (err) {
     console.error("❌ Error fetching products by category:", err);
     res.status(500).json({ message: "Failed to fetch products by category" });
   }
 };
+
 
 // 🔹 Get all unique categories
 const getCategories = async (req, res) => {

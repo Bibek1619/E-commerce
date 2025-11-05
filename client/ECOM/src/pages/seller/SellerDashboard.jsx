@@ -33,6 +33,8 @@ import ProductForm from "./components/ProductForm";
 import AnalyticsCharts from "./components/AnalyticsChart";
 import ProductList from "./components/ProductList";
 import SellerHeader from "./components/SellerHeader";
+import SellerOrdersSection from "./components/SellerOrderSection";
+import toast from "react-hot-toast";
 
 export default function SellerDashboard() {
    const { user: seller, loading, clearUser } = useUser();
@@ -124,6 +126,7 @@ if (!seller) {
       );
       setProducts((prev) => [data, ...prev]);
       setShowProductForm(false);
+      toast.success("Product added successfully");
       setIsLoading(false);
     } catch (err) {
       console.error("Error adding product:", err);
@@ -217,7 +220,7 @@ if (!seller) {
             <TabsTrigger value="products">Products</TabsTrigger>
             <TabsTrigger value="add-product">Add Product</TabsTrigger>
             <TabsTrigger value="analytics">Analytics</TabsTrigger>
-            <TabsTrigger value="profile">Profile</TabsTrigger>
+            <TabsTrigger value="orders">Orders</TabsTrigger>
           </TabsList>
 
           <TabsContent value="products">
@@ -241,7 +244,11 @@ if (!seller) {
             <AnalyticsCharts salesData={salesData} />
           </TabsContent>
 
-          <TabsContent value="profile">{/* Profile content */}</TabsContent>
+          <TabsContent value="orders">{/* Profile content */}
+
+            <SellerOrdersSection/>
+
+          </TabsContent>
         </Tabs>
       </div>
 

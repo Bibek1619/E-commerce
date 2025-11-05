@@ -1,10 +1,12 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { 
   Package, DollarSign, Image, Truck, Tag, Settings, Plus, X, Upload,
-  FileText, Palette, Ruler, Star, ShoppingCart, Eye, EyeOff
+  Star, Eye, EyeOff
 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 
-// Mock UI components
+// Mock UI components (as in your original code)
 const Button = ({ children, variant = "default", size = "default", type = "button", onClick, disabled, className = "" }) => {
   const baseStyles = "inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus:outline-none disabled:opacity-50 disabled:pointer-events-none";
   const variants = {
@@ -14,36 +16,23 @@ const Button = ({ children, variant = "default", size = "default", type = "butto
     ghost: "hover:bg-gray-100",
     secondary: "bg-gray-100 text-gray-900 hover:bg-gray-200"
   };
-  const sizes = {
-    default: "h-10 py-2 px-4",
-    sm: "h-9 px-3",
-    lg: "h-11 px-8"
-  };
+  const sizes = { default: "h-10 py-2 px-4", sm: "h-9 px-3", lg: "h-11 px-8" };
   return (
     <button type={type} onClick={onClick} disabled={disabled} className={`${baseStyles} ${variants[variant]} ${sizes[size]} ${className}`}>
       {children}
     </button>
   );
 };
-
 const Input = ({ type = "text", value, onChange, placeholder, required, className = "" }) => (
   <input type={type} value={value} onChange={onChange} placeholder={placeholder} required={required}
     className={`flex h-10 w-full rounded-md border border-gray-300 px-3 py-2 text-sm placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 ${className}`} />
 );
-
 const Textarea = ({ value, onChange, placeholder, className = "" }) => (
   <textarea value={value} onChange={onChange} placeholder={placeholder}
     className={`flex min-h-[80px] w-full rounded-md border border-gray-300 px-3 py-2 text-sm placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 ${className}`} />
 );
-
-const Label = ({ children, className = "" }) => (
-  <label className={`text-sm font-medium ${className}`}>{children}</label>
-);
-
-const Checkbox = ({ checked, onChange }) => (
-  <input type="checkbox" checked={checked} onChange={onChange} className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500" />
-);
-
+const Label = ({ children, className = "" }) => <label className={`text-sm font-medium ${className}`}>{children}</label>;
+const Checkbox = ({ checked, onChange }) => <input type="checkbox" checked={checked} onChange={onChange} className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500" />;
 const Card = ({ children, className = "" }) => <div className={`rounded-lg border bg-white shadow-sm ${className}`}>{children}</div>;
 const CardHeader = ({ children }) => <div className="flex flex-col space-y-1.5 p-6 pb-4">{children}</div>;
 const CardTitle = ({ children, icon: Icon }) => <div className="flex items-center gap-2 text-lg font-semibold">{Icon && <Icon className="h-5 w-5 text-blue-600" />}{children}</div>;
@@ -51,6 +40,8 @@ const CardContent = ({ children, className = "" }) => <div className={`p-6 pt-0 
 const Badge = ({ children, className = "" }) => <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium bg-blue-100 text-blue-800 ${className}`}>{children}</span>;
 
 export default function ProductForm({ product = null, onSubmit, onCancel, isLoading }) {
+  const navigate = useNavigate();
+
   // Basic info
   const [name, setName] = useState(product?.name || "");
   const [description, setDescription] = useState(product?.description || "");
@@ -66,11 +57,8 @@ export default function ProductForm({ product = null, onSubmit, onCancel, isLoad
   // Features & specifications
   const [features, setFeatures] = useState(product?.features || [""]);
   const [specifications, setSpecifications] = useState(
-  product?.specifications
-    ? Object.entries(product.specifications).map(([name, value]) => ({ name, value }))
-    : [{ name: "", value: "" }]
-);
-
+    product?.specifications ? Object.entries(product.specifications).map(([name, value]) => ({ name, value })) : [{ name: "", value: "" }]
+  );
 
   // Variants
   const [variants, setVariants] = useState(product?.variants || []);
@@ -86,7 +74,16 @@ export default function ProductForm({ product = null, onSubmit, onCancel, isLoad
 
   // UI
   const [showPreview, setShowPreview] = useState(false);
-  const [activeSection, setActiveSection] = useState("basic");
+  const sections = [
+    { id: "basic", label: "Basic Info", icon: Package },
+    { id: "pricing", label: "Pricing", icon: DollarSign },
+    { id: "features", label: "Features", icon: Star },
+    { id: "variants", label: "Variants", icon: Settings },
+    { id: "shipping", label: "Shipping", icon: Truck },
+    { id: "images", label: "Images", icon: Image },
+  ];
+  const [activeSectionIdx, setActiveSectionIdx] = useState(0);
+  const activeSection = sections[activeSectionIdx];
 
   // Handlers
   const handleImageChange = (e) => {
@@ -98,26 +95,14 @@ export default function ProductForm({ product = null, onSubmit, onCancel, isLoad
     }
     setImages(prev => [...prev, ...newFiles]);
   };
-
   const removeSelectedImage = (idx) => setImages(images.filter((_, i) => i !== idx));
   const removeExistingImage = (idx) => setExistingImages(existingImages.filter((_, i) => i !== idx));
-
   const handleFeatureChange = (idx, value) => setFeatures(features.map((f, i) => i === idx ? value : f));
   const addFeature = () => setFeatures([...features, ""]);
   const removeFeature = (idx) => setFeatures(features.filter((_, i) => i !== idx));
-
- // Update a spec field
-const handleSpecChange = (idx, field, val) => {
-  setSpecifications(specifications.map((s, i) => i === idx ? { ...s, [field]: val } : s));
-};
-
-// Add a new spec
-const addSpec = () => setSpecifications([...specifications, { name: "", value: "" }]);
-
-// Remove a spec
-const removeSpec = (idx) => setSpecifications(specifications.filter((_, i) => i !== idx));
-
-
+  const handleSpecChange = (idx, field, val) => setSpecifications(specifications.map((s, i) => i === idx ? { ...s, [field]: val } : s));
+  const addSpec = () => setSpecifications([...specifications, { name: "", value: "" }]);
+  const removeSpec = (idx) => setSpecifications(specifications.filter((_, i) => i !== idx));
   const handleVariantChange = (idx, field, value) => setVariants(variants.map((v, i) => i === idx ? { ...v, [field]: value } : v));
   const addVariant = () => setVariants([...variants, { size: "", color: "", price: "", stock: "" }]);
   const removeVariant = (idx) => setVariants(variants.filter((_, i) => i !== idx));
@@ -125,7 +110,7 @@ const removeSpec = (idx) => setSpecifications(specifications.filter((_, i) => i 
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!name || !price || !category) { alert("Please fill Name, Price, Category"); return; }
-    onSubmit({
+    const data = {
       name,
       description,
       price: Number(price),
@@ -135,22 +120,18 @@ const removeSpec = (idx) => setSpecifications(specifications.filter((_, i) => i 
       brand,
       tags: tags.split(",").map(t => t.trim()).filter(Boolean),
       features: features.filter(Boolean),
-     specifications: Object.fromEntries(specifications.filter(s => s.name).map(s => [s.name, s.value])),
+      specifications: Object.fromEntries(specifications.filter(s => s.name).map(s => [s.name, s.value])),
       variants: variants.filter(v => v.size || v.color),
       images,
       existingImages,
       shipping: { freeShipping, estimatedDays, returnPolicy },
-    });
+    };
+    onSubmit(data);
+    navigate("/seller/dashboard"); // Redirect to ProductList after adding
   };
 
-  const sections = [
-    { id: "basic", label: "Basic Info", icon: Package },
-    { id: "pricing", label: "Pricing", icon: DollarSign },
-    { id: "features", label: "Features", icon: Star },
-    { id: "variants", label: "Variants", icon: Settings },
-    { id: "shipping", label: "Shipping", icon: Truck },
-    { id: "images", label: "Images", icon: Image },
-  ];
+  const nextSection = () => { if (activeSectionIdx < sections.length - 1) setActiveSectionIdx(prev => prev + 1); };
+  const prevSection = () => { if (activeSectionIdx > 0) setActiveSectionIdx(prev => prev - 1); };
 
   const totalImages = images.length + existingImages.length;
 
@@ -161,27 +142,26 @@ const removeSpec = (idx) => setSpecifications(specifications.filter((_, i) => i 
         <p className="text-gray-600">Fill the details to {product ? "update" : "create"} a product</p>
       </div>
 
-      <div className="flex gap-6">
+      <div className="flex flex-col md:flex-row gap-6">
         {/* Sidebar */}
-        <div className="w-64 space-y-2">
-          {sections.map(sec => (
-            <button key={sec.id} onClick={() => setActiveSection(sec.id)}
-              className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left ${activeSection === sec.id ? "bg-blue-100 text-blue-700 border-l-4 border-blue-600" : "bg-white hover:bg-gray-50 text-gray-700"}`}>
+        <div className="w-full md:w-64 space-y-2 flex md:flex-col overflow-x-auto md:overflow-visible">
+          {sections.map((sec, idx) => (
+            <button key={sec.id} onClick={() => setActiveSectionIdx(idx)}
+              className={`flex items-center gap-3 px-4 py-3 rounded-lg text-left whitespace-nowrap ${activeSectionIdx === idx ? "bg-blue-100 text-blue-700 border-l-4 border-blue-600" : "bg-white hover:bg-gray-50 text-gray-700"}`}>
               <sec.icon className="h-5 w-5" />
               {sec.label}
             </button>
           ))}
           <button onClick={() => setShowPreview(!showPreview)}
-            className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left bg-green-50 hover:bg-green-100 text-green-700">
+            className="flex items-center gap-3 px-4 py-3 rounded-lg text-left bg-green-50 hover:bg-green-100 text-green-700">
             {showPreview ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
             {showPreview ? "Hide Preview" : "Preview"}
           </button>
         </div>
 
-        {/* Main form */}
+        {/* Main Form */}
         <div className="flex-1 space-y-6">
-          {/* Basic Info */}
-          {activeSection === "basic" && (
+          {activeSection.id === "basic" && (
             <Card>
               <CardHeader><CardTitle icon={Package}>Basic Information</CardTitle></CardHeader>
               <CardContent className="space-y-4">
@@ -211,33 +191,23 @@ const removeSpec = (idx) => setSpecifications(specifications.filter((_, i) => i 
             </Card>
           )}
 
-          {/* Pricing */}
-          {activeSection === "pricing" && (
+          {/* Pricing Section */}
+          {activeSection.id === "pricing" && (
             <Card>
               <CardHeader><CardTitle icon={DollarSign}>Pricing & Stock</CardTitle></CardHeader>
               <CardContent className="grid grid-cols-3 gap-4">
-                <div>
-                  <Label>Price *</Label>
-                  <Input type="number" value={price} onChange={e => setPrice(e.target.value)} placeholder="0.00" required />
-                </div>
-                <div>
-                  <Label>Discounted Price</Label>
-                  <Input type="number" value={discountedPrice} onChange={e => setDiscountedPrice(e.target.value)} placeholder="0.00" />
-                </div>
-                <div>
-                  <Label>Stock</Label>
-                  <Input type="number" value={stock} onChange={e => setStock(e.target.value)} placeholder="0" />
-                </div>
+                <div><Label>Price *</Label><Input type="number" value={price} onChange={e => setPrice(e.target.value)} placeholder="0.00" required /></div>
+                <div><Label>Discounted Price</Label><Input type="number" value={discountedPrice} onChange={e => setDiscountedPrice(e.target.value)} placeholder="0.00" /></div>
+                <div><Label>Stock</Label><Input type="number" value={stock} onChange={e => setStock(e.target.value)} placeholder="0" /></div>
               </CardContent>
             </Card>
           )}
 
-          {/* Features */}
-          {activeSection === "features" && (
+          {/* Features Section */}
+          {activeSection.id === "features" && (
             <Card>
               <CardHeader><CardTitle icon={Star}>Features & Specifications</CardTitle></CardHeader>
               <CardContent className="space-y-4">
-                {/* Features */}
                 <div>
                   {features.map((f, idx) => (
                     <div key={idx} className="flex gap-2 mb-2">
@@ -247,37 +217,22 @@ const removeSpec = (idx) => setSpecifications(specifications.filter((_, i) => i 
                   ))}
                   <Button type="button" variant="outline" onClick={addFeature}><Plus className="h-4 w-4 mr-2" />Add Feature</Button>
                 </div>
-
-                {/* Specifications */}
                 <div>
                   {specifications.map((spec, idx) => (
-  <div key={idx} className="flex gap-2 mb-2">
-    <Input 
-      value={spec.name} 
-      onChange={e => handleSpecChange(idx, "name", e.target.value)} 
-      placeholder="Spec Name" 
-    />
-    <Input 
-      value={spec.value} 
-      onChange={e => handleSpecChange(idx, "value", e.target.value)} 
-      placeholder="Value" 
-    />
-    <Button type="button" variant="ghost" onClick={() => removeSpec(idx)}>
-      <X className="h-4 w-4" />
-    </Button>
-  </div>
-))}
-<Button type="button" variant="outline" onClick={addSpec}>
-  <Plus className="h-4 w-4 mr-2" />Add Spec
-</Button>
-
+                    <div key={idx} className="flex gap-2 mb-2">
+                      <Input value={spec.name} onChange={e => handleSpecChange(idx, "name", e.target.value)} placeholder="Spec Name" />
+                      <Input value={spec.value} onChange={e => handleSpecChange(idx, "value", e.target.value)} placeholder="Value" />
+                      <Button type="button" variant="ghost" onClick={() => removeSpec(idx)}><X className="h-4 w-4" /></Button>
+                    </div>
+                  ))}
+                  <Button type="button" variant="outline" onClick={addSpec}><Plus className="h-4 w-4 mr-2" />Add Spec</Button>
                 </div>
               </CardContent>
             </Card>
           )}
 
-          {/* Variants */}
-          {activeSection === "variants" && (
+          {/* Variants Section */}
+          {activeSection.id === "variants" && (
             <Card>
               <CardHeader><CardTitle icon={Settings}>Variants</CardTitle></CardHeader>
               <CardContent>
@@ -297,8 +252,8 @@ const removeSpec = (idx) => setSpecifications(specifications.filter((_, i) => i 
             </Card>
           )}
 
-          {/* Shipping */}
-          {activeSection === "shipping" && (
+          {/* Shipping Section */}
+          {activeSection.id === "shipping" && (
             <Card>
               <CardHeader><CardTitle icon={Truck}>Shipping & Returns</CardTitle></CardHeader>
               <CardContent className="space-y-4">
@@ -318,8 +273,8 @@ const removeSpec = (idx) => setSpecifications(specifications.filter((_, i) => i 
             </Card>
           )}
 
-          {/* Images */}
-          {activeSection === "images" && (
+          {/* Images Section */}
+          {activeSection.id === "images" && (
             <Card>
               <CardHeader><CardTitle icon={Image}>Images</CardTitle></CardHeader>
               <CardContent>
@@ -330,62 +285,59 @@ const removeSpec = (idx) => setSpecifications(specifications.filter((_, i) => i 
                     <span className="text-gray-500"> or drag and drop</span>
                     <Input type="file" multiple accept="image/*" onChange={handleImageChange} className="hidden" />
                   </Label>
-                  <p className="text-xs text-gray-500 mt-2">PNG, JPG up to 10MB each. Max 10 images.</p>
+                  <p className="text-xs text-gray-500 mt-2">PNG, JPG up to 5MB each, max 10 images</p>
                 </div>
 
-                <div className="flex items-center gap-2 mb-4"><Badge>{totalImages}/10 images</Badge>{totalImages > 0 && <span className="text-sm text-gray-600">uploaded</span>}</div>
-
-                <div className="grid grid-cols-3 md:grid-cols-5 gap-4">
+                <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
                   {existingImages.map((img, idx) => (
-                    <div key={`existing-${img}-${idx}`} className="relative group">
-                      <img src={img.startsWith('http') ? img : `/api${img}`} alt="Product" className="w-full h-24 object-cover rounded-lg border" />
-                      <Button type="button" variant="destructive" size="sm" className="absolute -top-2 -right-2 opacity-0 group-hover:opacity-100 transition-opacity" onClick={() => removeExistingImage(idx)}><X className="h-3 w-3" /></Button>
+                    <div key={idx} className="relative border rounded overflow-hidden">
+                      <img src={img} alt="" className="w-full h-24 object-cover" />
+                      <Button type="button" variant="destructive" size="sm" onClick={() => removeExistingImage(idx)} className="absolute top-1 right-1"><X className="h-3 w-3" /></Button>
                     </div>
                   ))}
-                  {images.map((file, idx) => (
-                    <div key={`new-${file.name}-${idx}`} className="relative group">
-                      <img src={URL.createObjectURL(file)} alt="Preview" className="w-full h-24 object-cover rounded-lg border border-blue-200" />
-                      <Button type="button" variant="destructive" size="sm" className="absolute -top-2 -right-2 opacity-0 group-hover:opacity-100 transition-opacity" onClick={() => removeSelectedImage(idx)}><X className="h-3 w-3" /></Button>
-                      <Badge className="absolute bottom-1 left-1 text-xs">New</Badge>
+                  {images.map((img, idx) => (
+                    <div key={idx} className="relative border rounded overflow-hidden">
+                      <img src={URL.createObjectURL(img)} alt="" className="w-full h-24 object-cover" />
+                      <Button type="button" variant="destructive" size="sm" onClick={() => removeSelectedImage(idx)} className="absolute top-1 right-1"><X className="h-3 w-3" /></Button>
                     </div>
+                  ))}
+                </div>
+
+                <p className="mt-2 text-sm text-gray-500">{totalImages}/10 images added</p>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Navigation Buttons */}
+          <div className="flex justify-between mt-4">
+            <Button type="button" variant="outline" onClick={prevSection} disabled={activeSectionIdx === 0}>Previous</Button>
+            {activeSectionIdx < sections.length - 1 ? (
+              <Button type="button" onClick={nextSection}>Next</Button>
+            ) : (
+              <Button type="submit" onClick={handleSubmit} disabled={isLoading}>{product ? "Update Product" : "Add Product"}</Button>
+            )}
+          </div>
+
+          {/* Preview */}
+          {showPreview && (
+            <Card className="mt-6 bg-gray-100">
+              <CardHeader><CardTitle icon={Eye}>Preview</CardTitle></CardHeader>
+              <CardContent>
+                <h2 className="font-semibold text-xl">{name || "Product Name"}</h2>
+                <p className="text-gray-700">{description}</p>
+                <div className="mt-2 flex flex-wrap gap-2">
+                  {tags.split(",").map((t, i) => t && <Badge key={i}>{t}</Badge>)}
+                </div>
+                <p className="mt-2 font-medium">Price: Rs{discountedPrice || price}</p>
+                <div className="grid grid-cols-2 md:grid-cols-5 gap-2 mt-2">
+                  {existingImages.concat(images.map(img => URL.createObjectURL(img))).map((img, i) => (
+                    <img key={i} src={img} alt="" className="w-full h-24 object-cover rounded" />
                   ))}
                 </div>
               </CardContent>
             </Card>
           )}
-
-          {/* Submit Buttons */}
-          <div className="flex justify-end gap-3 pt-6 border-t">
-            <Button type="button" variant="outline" onClick={onCancel}>Cancel</Button>
-            <Button onClick={handleSubmit} disabled={isLoading}>{isLoading ? "Saving..." : (product ? "Update Product" : "Add Product")}</Button>
-          </div>
         </div>
-
-        {/* Preview */}
-        {showPreview && (
-          <div className="w-80 bg-white rounded-lg shadow-lg p-6 h-fit">
-            <h3 className="font-semibold mb-4">Preview</h3>
-            <div className="space-y-3">
-              <h4 className="font-medium text-lg">{name || "Product Name"}</h4>
-              <p className="text-sm text-gray-600">{brand}</p>
-              {(price || discountedPrice) && (
-                <div className="flex items-center gap-2">
-                  {discountedPrice && <span className="font-bold text-green-600">${discountedPrice}</span>}
-                  <span className={discountedPrice ? "line-through text-gray-500" : "font-bold"}>Rs {price}</span>
-                </div>
-              )}
-              {description && <p className="text-sm text-gray-700 line-clamp-3">{description}</p>}
-              {features.filter(Boolean).length > 0 && (
-                <div>
-                  <h5 className="font-medium text-sm mb-2">Features:</h5>
-                  <ul className="text-xs space-y-1">
-                    {features.filter(Boolean).slice(0, 3).map((f, idx) => <li key={idx} className="flex items-center gap-1"><Star className="h-3 w-3 text-yellow-500" />{f}</li>)}
-                  </ul>
-                </div>
-              )}
-            </div>
-          </div>
-        )}
       </div>
     </div>
   );

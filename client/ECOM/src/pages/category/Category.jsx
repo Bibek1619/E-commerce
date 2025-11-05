@@ -21,7 +21,6 @@ const Category = () => {
   const { user, loading: userLoading } = useUser();
   const navigate = useNavigate();
 
-  // ⭐ Shuffle helper
   const shuffleArray = (array) => array.sort(() => Math.random() - 0.5);
 
   useEffect(() => {
@@ -58,7 +57,6 @@ const Category = () => {
     e.stopPropagation();
     if (userLoading) return;
     if (!user) {
-      // instead of redirect, open popup signin if you have one
       navigate("/auth/signin");
       return;
     }
@@ -92,7 +90,6 @@ const Category = () => {
     return <div className="flex gap-0.5">{stars}</div>;
   };
 
-  // Pagination logic
   const totalPages = Math.ceil(products.length / ITEMS_PER_PAGE);
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
   const currentProducts = products.slice(startIndex, startIndex + ITEMS_PER_PAGE);
@@ -111,66 +108,65 @@ const Category = () => {
           <p className="text-gray-500 text-center">No products found.</p>
         ) : (
           <>
-            {/* 🛍 Product grid */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+            {/* Product grid: 2 per row on mobile, 2 on sm, 4 on md */}
+            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-4">
               {currentProducts.map((product) => (
                 <div
                   key={product._id}
-                  className="border rounded-lg p-3 bg-white shadow hover:shadow-lg transition relative cursor-pointer"
+                  className="border rounded-lg p-2 sm:p-3 bg-white shadow hover:shadow-lg transition relative cursor-pointer"
                   onClick={() => navigate(`/product/${product._id}`)}
                 >
                   <div className="relative">
                     <img
-                      src={product.images?.[0]?.url || "/images/default-product.png"}
+                      src={product.images?.[0] || product.image || "/images/default-product.png"}
                       alt={product.name}
-                      className="h-40 w-full object-cover rounded"
+                      className="h-28 sm:h-36 md:h-40 w-full object-cover rounded"
                     />
 
-                    {/* ❤️ Wishlist */}
+                    {/* Wishlist */}
                     <button
-                      className="absolute top-2 right-10 bg-white p-1 rounded-full shadow hover:bg-red-100"
+                      className="absolute top-1 right-8 bg-white p-1 rounded-full shadow hover:bg-red-100"
                       onClick={(e) => {
                         e.stopPropagation();
                         alert("Wishlist clicked");
                       }}
                     >
-                      <Heart className="w-5 h-5 text-gray-600 hover:text-red-500" />
+                      <Heart className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600 hover:text-red-500" />
                     </button>
 
-                    {/* 🛒 Cart */}
+                    {/* Cart */}
                     <button
-                      className="absolute top-2 right-2 bg-white p-1 rounded-full shadow hover:bg-green-100"
+                      className="absolute top-1 right-1 bg-white p-1 rounded-full shadow hover:bg-green-100"
                       onClick={(e) => handleAddToCartClick(product, e)}
                     >
-                      <ShoppingCart className="w-5 h-5 text-gray-600 hover:text-green-600" />
+                      <ShoppingCart className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600 hover:text-green-600" />
                     </button>
                   </div>
 
-                  <h2 className="text-lg font-semibold mt-3 line-clamp-2">
+                  <h2 className="text-sm sm:text-base font-semibold mt-2 line-clamp-2">
                     {product.name}
                   </h2>
 
                   <div className="mt-1">
-                    {product.discountedPrice &&
-                    product.discountedPrice < product.price ? (
+                    {product.discountedPrice && product.discountedPrice < product.price ? (
                       <div>
-                        <span className="text-orange-600 font-bold text-lg">
+                        <span className="text-orange-600 font-bold text-sm sm:text-lg">
                           Rs. {product.discountedPrice.toLocaleString()}
                         </span>
-                        <span className="text-gray-400 line-through ml-2">
+                        <span className="text-gray-400 line-through ml-1 text-xs sm:text-sm">
                           Rs. {product.price.toLocaleString()}
                         </span>
                       </div>
                     ) : (
-                      <span className="text-orange-600 font-bold text-lg">
+                      <span className="text-orange-600 font-bold text-sm sm:text-lg">
                         Rs. {product.price.toLocaleString()}
                       </span>
                     )}
                   </div>
 
-                  <div className="flex items-center gap-1 mt-2">
+                  <div className="flex items-center gap-1 mt-1">
                     {renderStars(product.ratings || 0)}
-                    <span className="text-sm text-gray-600">
+                    <span className="text-xs sm:text-sm text-gray-600">
                       ({product.reviews?.length || 0})
                     </span>
                   </div>
@@ -178,7 +174,7 @@ const Category = () => {
               ))}
             </div>
 
-            {/* 📄 Pagination */}
+            {/* Pagination */}
             <div className="flex justify-center mt-6 space-x-2">
               <Button
                 variant="outline"
@@ -210,7 +206,7 @@ const Category = () => {
         )}
       </div>
 
-      {/* 🧾 Cart Popup */}
+      {/* Cart Popup */}
       {popupProduct && (
         <CartPopup product={popupProduct} onClose={() => setPopupProduct(null)} />
       )}

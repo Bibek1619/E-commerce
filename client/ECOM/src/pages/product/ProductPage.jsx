@@ -92,7 +92,7 @@ buyNowItem({
     : product.name,
   price: variant?.price || product.price,
   image: product.images?.[0],
-  quantity,
+  quantity: quantity,
   size: selectedSize,
   color: selectedColor,
 });

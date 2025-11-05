@@ -14,6 +14,7 @@ import AuthModal from "../auth/AuthModal";
 import Login from "@/pages/Auth/user/Login";
 import SignUp from "@/pages/Auth/user/SignUp";
 
+
 const UserDropdown = () => {
   const { user, clearUser } = useUser();
   const [modalType, setModalType] = useState(null); // "login" or "signup"
@@ -86,7 +87,7 @@ const UserDropdown = () => {
           <Link to="/dashboard">Dashboard</Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
-          <Link to="/orders">Orders</Link>
+          <Link to="/orders/my-orders">Orders</Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
           <Link to="/profile">Profile</Link>

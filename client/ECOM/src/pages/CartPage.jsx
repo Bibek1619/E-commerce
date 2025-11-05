@@ -24,7 +24,7 @@ export default function CartPage() {
             Add some products to get started!
           </p>
           <Button className="bg-orange-400 hover:bg-orange-500 text-white">
-            <Link to="/products">Continue Shopping</Link>
+            <Link to="/category/all">Continue Shopping</Link>
           </Button>
         </main>
       </div>

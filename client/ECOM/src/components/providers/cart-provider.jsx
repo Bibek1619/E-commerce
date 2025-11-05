@@ -15,61 +15,72 @@ export const CartProvider = ({ children }) => {
   const isLoggedIn = !!user;
 
   // Fetch cart on login
-  useEffect(() => {
-    const fetchCart = async () => {
-      if (!isLoggedIn) {
-        setItems([]);
-        setLoading(false);
-        return;
-      }
-      try {
-        setLoading(true);
-        const data = await getCart();
-        setItems(data);
-      } catch (err) {
-        console.error("Error fetching cart:", err);
-        setItems([]);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchCart();
-  }, [isLoggedIn]);
-
-  const addItem = async (product, quantity = 1) => {
-    if (!isLoggedIn) return toast.error("Please login to add products");
-
+useEffect(() => {
+  const fetchCart = async () => {
+    if (!isLoggedIn) {
+      setItems([]);
+      setLoading(false);
+      return;
+    }
     try {
-      await addToCart(product._id, quantity);
-      const existing = items.find((i) => i._id === product._id);
-
-      if (existing) {
-        setItems((prev) =>
-          prev.map((i) =>
-            i._id === product._id
-              ? { ...i, quantity: i.quantity + quantity }
-              : i
-          )
-        );
-      } else {
-       setItems((prev) => [
-  ...prev,
-  { 
-    ...product,
-_id: product._id,
-   
-    productId: product._id,
-     // <-- ADD THIS
-      quantity,
-  }
-]);
-
-      }
+      setLoading(true);
+      let data = await getCart();
+      // Normalize backend items
+      data = data.map(item => ({
+        ...item,
+        _id: item._id || item.id,
+        productId: item.productId || item._id || item.id,
+      }));
+      setItems(data);
     } catch (err) {
-      console.error(err);
-      toast.error("Failed to add to cart");
+      console.error("Error fetching cart:", err);
+      setItems([]);
+    } finally {
+      setLoading(false);
     }
   };
+  fetchCart();
+}, [isLoggedIn]);
+
+const addItem = async (product, quantity = 1) => {
+  if (!isLoggedIn) return toast.error("Please login to add products");
+
+  try {
+    await addToCart(product.productId || product._id, quantity); // backend expects productId
+
+    const existing = items.find((i) => i._id === product._id);
+
+    if (existing) {
+      // Update quantity if the item already exists
+      setItems((prev) =>
+        prev.map((i) =>
+          i._id === product._id
+            ? { ...i, quantity: i.quantity + quantity }
+            : i
+        )
+      );
+    } else {
+      // Add new item, ensure productId is always present
+      setItems((prev) => [
+        ...prev,
+        {
+          _id: product._id,                        // unique cart key
+          productId: product.productId || product._id, // required for checkout
+          name: product.name,
+          price: product.price,
+          image: product.image,
+          size: product.size,
+          color: product.color,
+          quantity,
+        },
+      ]);
+    }
+  } catch (err) {
+    console.error(err);
+    toast.error("Failed to add to cart");
+  }
+};
+
 
 const updateQuantity = async (productId, quantity) => {
   if (!isLoggedIn) return toast.error("Please login to update cart");
@@ -83,7 +94,7 @@ const updateQuantity = async (productId, quantity) => {
 
     setItems((prev) =>
       prev.map((item) =>
-        item.id === productId ? { ...item, quantity } : item
+        item._id === productId ? { ...item, quantity } : item
       )
     );
   } catch (err) {
@@ -113,14 +124,14 @@ const updateQuantity = async (productId, quantity) => {
     items.reduce((total, item) => total + item.price * item.quantity, 0);
 
 
- const buyNowItem = (product, quantity = 1) => {
+ const buyNowItem = (product) => {
     if (!isLoggedIn) {
       toast.error("Please login to buy products");
       return;
     }
    setBuyNow({
   ...product,
-  quantity,
+
   productId: product._id ,
   // <-- ADD THIS
   _id: product._id
