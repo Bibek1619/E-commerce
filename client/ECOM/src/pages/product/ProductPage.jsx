@@ -29,6 +29,7 @@ export default function ProductPage() {
       try {
         setLoading(true);
         const res = await axiosInstance.get(API_PATHS.PRODUCT.GET_BY_ID(id));
+           console.log("Fetched product data:", res.data);
         setProduct(res.data);
       } catch {
         toast.error("Could not load product");
@@ -95,6 +96,8 @@ buyNowItem({
   quantity: quantity,
   size: selectedSize,
   color: selectedColor,
+  // seller: product.sellerId || product.seller, // <-- ADD THIS
+  seller: product.seller?._id,
 });
 
 

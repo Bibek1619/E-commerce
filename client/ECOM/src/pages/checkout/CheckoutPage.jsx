@@ -36,40 +36,47 @@ function CheckoutPage() {
   }, [user, loading, navigate, location]);
 
   // Load checkout items
-  useEffect(() => {
-    const query = new URLSearchParams(location.search);
-    const isBuyNow = query.get("buyNow") === "true";
+useEffect(() => {
+  const query = new URLSearchParams(location.search);
+  const isBuyNow = query.get("buyNow") === "true";
 
-    // Check sessionStorage first (from CartPage)
-const storedItems = sessionStorage.getItem("checkoutItems");
-if (storedItems) {
-  const parsedItems = JSON.parse(storedItems).map((item) => ({
-    ...item,
-    _id:item._id || item.id, // ensure _id exists
-    productId: item.productId || item._id || item.id, // ensure productId exists
-  }));
-  setCheckoutItems(parsedItems);
-  sessionStorage.removeItem("checkoutItems");
-} else if (isBuyNow && buyNow) {
-  setCheckoutItems([
-    {
-      ...buyNow,
-       _id: buyNow._id || buyNow.id,
-      productId: buyNow.productId || buyNow._id || buyNow.id,
-    },
-  ]);
-} else {
-  const fixedItems = items.map((item) => ({
-    ...item,
-    _id: item._id || item.id,
-    productId: item.productId || item._id,
-  }));
-  setCheckoutItems(fixedItems);
-}
+  // Check sessionStorage first
+  const storedItems = sessionStorage.getItem("checkoutItems");
+  if (storedItems) {
+    const parsedItems = JSON.parse(storedItems).map((item) => ({
+      ...item,
+      _id: item._id || item.id,
+      productId: item.productId || item._id || item.id,
+    }));
+    setCheckoutItems(parsedItems);
 
-  }, [items, buyNow, location.search]);
+  } else if (isBuyNow) {
+    // Try to load buyNow from sessionStorage
+    const storedBuyNow = sessionStorage.getItem("buyNowItem");
+    if (storedBuyNow) {
+      const item = JSON.parse(storedBuyNow);
+      setCheckoutItems([item]);
+    } else if (buyNow) {
+      setCheckoutItems([buyNow]);
+    } else {
+      setCheckoutItems([]); // nothing to show
+    }
 
-  if (loading || !user || checkoutItems.length === 0) return null;
+  } else if (items.length > 0) {
+    const fixedItems = items.map((item) => ({
+      ...item,
+      _id: item._id || item.id,
+      productId: item.productId || item._id,
+    }));
+    setCheckoutItems(fixedItems);
+  } else {
+    setCheckoutItems([]);
+  }
+}, [items, buyNow, location.search]);
+
+
+
+  if (loading || !user || checkoutItems.length === 0) return <h1>loading</h1>;
 
   // Total calculation
   const total = checkoutItems.reduce(
@@ -89,41 +96,58 @@ if (storedItems) {
       alert("Please fill in all shipping details!");
       return;
     }
-    // 🔹 Add this debug log here
-    console.log("checkoutItems before mapping:", checkoutItems);
-    checkoutItems.forEach((item) => {
-      if (!item.productId) console.warn("Missing productId for item:", item);
-    });
-    try {
-   
-      const itemsToSend = checkoutItems.map((item) => {
-  const productId = item.productId || item._id; // fallback
-  if (!productId) {
-    console.error("Missing productId for item:", item);
-  }
-  return {
-    product: productId,
-    name: item.name,
-    price: item.price,
-    quantity: item.quantity,
-    image: item.image,
-  };
-});
 
-      const missing = itemsToSend.filter((i) => !i.product);
-      if (missing.length > 0) {
-        console.error("Missing product IDs:", missing);
-        alert("Some items are missing Product IDs. Check console.");
-        return;
+    const itemsToSend = checkoutItems.map((item) => ({
+      product: item.productId || item._id,
+      name: item.name,
+      price: item.price,
+      quantity: item.quantity,
+      image: item.image,
+      seller: item.sellerId || item.seller , // ✅ add this li
+    }));
+
+    // 🔹 Stripe payment
+    if (payment === "stripe") {
+      try {
+        const response = await axiosInstance.post(
+          API_PATHS.PAYMENT.CREATE_CHECKOUT_SESSION,
+          {
+            items: itemsToSend,
+            customerEmail: address.email,
+            userId: user._id, // ✅ add this
+            address,
+          }
+        );
+        if (response.data.url) {
+          window.location = response.data.url; // redirect to Stripe Checkout
+        }
+      } catch (err) {
+     // <-- Replace this block with the new debug version
+    console.error("Stripe checkout failed:");
+    if (err.response) {
+      console.error("Status:", err.response.status);
+      console.error("Data:", err.response.data);
+    } else {
+      console.error(err.message);
+    }
+        alert("❌ Failed to initiate Stripe payment. Check console.");
       }
+      return; // stop here, we redirect to Stripe
+    }
+
+    // 🔹 Cash on Delivery or other payments
+    try {
       const response = await axiosInstance.post(API_PATHS.ORDER.CREATE, {
         items: itemsToSend,
         address,
         paymentMethod: payment,
-        total,
+        total: checkoutItems.reduce(
+          (sum, item) => sum + item.price * item.quantity,
+          0
+        ),
       });
 
-      navigate(`/order-success/${response.data.orders[0]._id}`); // navigate to order success page
+      navigate(`/order-success/${response.data.orders[0]._id}`);
     } catch (error) {
       alert(
         "❌ Failed to place order: " +

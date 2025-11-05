@@ -123,8 +123,8 @@ function CheckoutForm({ checkoutItems, address, setAddress, payment, setPayment 
               <Label htmlFor="card">Credit / Debit Card</Label>
             </div>
             <div className="flex items-center space-x-2">
-              <RadioGroupItem value="esewa" id="esewa" />
-              <Label htmlFor="esewa">eSewa / Mobile Wallet</Label>
+              <RadioGroupItem value="stripe" id="stripe" />
+              <Label htmlFor="stripe">stripe</Label>
             </div>
           </RadioGroup>
         </CardContent>

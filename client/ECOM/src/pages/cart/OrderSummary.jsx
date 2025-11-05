@@ -15,10 +15,10 @@ export default function OrderSummary({ selectedItems }) {
   const total = subtotal + shipping;
 
   const handleCheckout = () => {
-    if (selectedItems.length === 0) return;
-
-    // Store selected items in sessionStorage for CheckoutPage
+   if (!selectedItems.length) return toast.error("Select items to checkout");
+    // Save selected items to sessionStorage
     sessionStorage.setItem("checkoutItems", JSON.stringify(selectedItems));
+    // Navigate to checkout page
     navigate("/checkout");
   };
 

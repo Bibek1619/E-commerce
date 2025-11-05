@@ -9,7 +9,7 @@ function OrderSummary({ total, address, payment, handlePlaceOrder }) {
 
       <div className="flex justify-between text-sm mb-2">
         <span>Subtotal</span>
-        <span>${total.toFixed(2)}</span>
+        <span>Rs {total.toFixed(2)}</span>
       </div>
 
       <div className="flex justify-between text-sm mb-2">
@@ -21,7 +21,7 @@ function OrderSummary({ total, address, payment, handlePlaceOrder }) {
 
       <div className="flex justify-between text-lg font-bold">
         <span>Total</span>
-        <span>${total.toFixed(2)}</span>
+        <span>Rs {total.toFixed(2)}</span>
       </div>
 
       <Button

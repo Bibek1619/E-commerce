@@ -26,7 +26,7 @@ const orderSchema = new mongoose.Schema(
 
     paymentMethod: {
       type: String,
-      enum: ["cod", "card", "esewa"],
+      enum: ["cod", "card", "stripe"],
       default: "cod",
     },
 
@@ -37,6 +37,7 @@ const orderSchema = new mongoose.Schema(
       enum: ["pending", "accepted", "processing", "shipped", "delivered", "cancelled"],
       default: "pending",
     },
+        stripeSessionId: { type: String },
   },
   { timestamps: true }
 );

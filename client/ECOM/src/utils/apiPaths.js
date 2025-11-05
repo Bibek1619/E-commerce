@@ -34,4 +34,10 @@ export const API_PATHS = {
     CANCEL_ORDER: (id) => `/api/orders/cancel/${id}`,
 
   },
+  PAYMENT: {
+    CREATE_CHECKOUT_SESSION: "/api/payment/create-checkout-session", // POST
+    WEBHOOK: "/webhook/stripe", // POST, for Stripe webhook
+     GET_ORDER_BY_SESSION: "/api/payment/get-order-by-session", // use query param ?session_id=...
+       VERIFY: "/api/payment/verify" // ✅ add this
+  },
 };

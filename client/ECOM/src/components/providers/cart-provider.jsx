@@ -124,20 +124,22 @@ const updateQuantity = async (productId, quantity) => {
     items.reduce((total, item) => total + item.price * item.quantity, 0);
 
 
- const buyNowItem = (product) => {
-    if (!isLoggedIn) {
-      toast.error("Please login to buy products");
-      return;
-    }
-   setBuyNow({
-  ...product,
+const buyNowItem = (product) => {
+  if (!isLoggedIn) {
+    toast.error("Please login to buy products");
+    return;
+  }
 
-  productId: product._id ,
-  // <-- ADD THIS
-  _id: product._id
-});
-
+  const newItem = {
+    ...product,
+    _id: product._id,
+    productId: product._id,
   };
+
+  setBuyNow(newItem);
+  sessionStorage.setItem("buyNowItem", JSON.stringify(newItem)); // <-- save to sessionStorage
+};
+
   return (
     <CartContext.Provider
       value={{

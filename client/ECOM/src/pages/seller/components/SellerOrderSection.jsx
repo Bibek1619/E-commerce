@@ -1,3 +1,4 @@
+// src/pages/seller/SellerOrdersSection.jsx
 import React, { useEffect, useState } from "react";
 import axiosInstance from "@/utils/axiosInstance";
 import { API_PATHS } from "@/utils/apiPaths";
@@ -23,23 +24,18 @@ export default function SellerOrdersSection() {
   };
 
   // Update order status
- // Update order status
-const updateOrderStatus = async (orderId, newStatus) => {
-  try {
-    // ✅ Correct usage
-    await axiosInstance.put(API_PATHS.ORDER.UPDATE_STATUS(orderId), { status: newStatus });
-    
-    toast.success(`Order status updated to "${newStatus}"`);
-    
-    setOrders((prev) =>
-      prev.map((o) => (o._id === orderId ? { ...o, status: newStatus } : o))
-    );
-  } catch (err) {
-    console.error(err);
-    toast.error("Failed to update order status");
-  }
-};
-
+  const updateOrderStatus = async (orderId, newStatus) => {
+    try {
+      await axiosInstance.put(API_PATHS.ORDER.UPDATE_STATUS(orderId), { status: newStatus });
+      toast.success(`Order status updated to "${newStatus}"`);
+      setOrders((prev) =>
+        prev.map((o) => (o._id === orderId ? { ...o, status: newStatus } : o))
+      );
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to update order status");
+    }
+  };
 
   useEffect(() => {
     fetchOrders();
@@ -69,6 +65,18 @@ const updateOrderStatus = async (orderId, newStatus) => {
     }
   };
 
+  const getPaymentStatusText = (order) => {
+    if (order.paymentMethod === "cod") return "Cash on Delivery";
+    if (order.paymentMethod === "stripe") return order.paymentStatus || "Paid via Stripe";
+    return "Unknown";
+  };
+
+  const getPaymentStatusColor = (order) => {
+    if (order.paymentMethod === "cod") return "text-yellow-600";
+    if (order.paymentMethod === "stripe") return "text-green-600";
+    return "text-gray-600";
+  };
+
   return (
     <div className="space-y-4">
       {orders.map((order) => (
@@ -87,6 +95,17 @@ const updateOrderStatus = async (orderId, newStatus) => {
                     {order.status}
                   </span>
                 </p>
+                <p className="text-sm">
+                  Payment:{" "}
+                  <span className={getPaymentStatusColor(order)}>
+                    {getPaymentStatusText(order)}
+                  </span>
+                </p>
+                {order.paymentMethod === "stripe" && order.stripeSessionId && (
+                  <p className="text-xs text-gray-500">
+                    Session ID: {order.stripeSessionId}
+                  </p>
+                )}
               </div>
 
               {/* Status Dropdown (disabled if cancelled) */}
