@@ -25,7 +25,7 @@ function OrderSummary({ total, address, payment, handlePlaceOrder }) {
       </div>
 
       <Button
-        className="w-full mt-6 flex items-center gap-2"
+        className="w-full mt-6 flex items-center gap-2 !bg-amber-500 hover:!bg-amber-600 text-white"
         onClick={handlePlaceOrder}
       >
         <CreditCard className="w-5 h-5" />
