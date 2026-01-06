@@ -8,6 +8,7 @@ import toast from "react-hot-toast";
 import Layout from "@/components/layout/Layout";
 import ProductMain from "./ProductMain";
 import ProductTabs from "./ProductTabs";
+import ReviewProduct from './ReviewProduct';
 
 export default function ProductPage() {
   const { id } = useParams();
@@ -126,6 +127,10 @@ buyNowItem({
           handleBuyNow={handleBuyNow}
         />
         <ProductTabs product={product} showFullDesc={showFullDesc} setShowFullDesc={setShowFullDesc} />
+      </div>
+      <div className="mt-6">
+
+        <ReviewProduct productId={product._id}/>
       </div>
     </Layout>
   );

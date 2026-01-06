@@ -115,7 +115,7 @@ const SignUp = ({ switchToLogin }) => {
         localStorage.setItem("token", token);
         updateUser(user);
         toast.success("Account created successfully!");
-        navigate("/");
+        navigate("/auth/signin");
       }
     } catch (error) {
       if (error.response?.data?.message) {

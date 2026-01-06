@@ -40,4 +40,9 @@ export const API_PATHS = {
      GET_ORDER_BY_SESSION: "/api/payment/get-order-by-session", // use query param ?session_id=...
        VERIFY: "/api/payment/verify" // ✅ add this
   },
+
+  REVIEW: {
+    ADD: "/api/review/add",
+    GET: (productId) => `/api/review/${productId}`,
+  },
 };

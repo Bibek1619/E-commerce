@@ -33,7 +33,7 @@ function CheckoutForm({ checkoutItems, address, setAddress, payment, setPayment 
                 <p className="text-sm text-gray-500">Qty: {item.quantity}</p>
               </div>
               <p className="font-semibold text-orange-600">
-                ${(item.price * item.quantity).toFixed(2)}
+                Rs {(item.price * item.quantity).toFixed(2)}
               </p>
             </div>
           ))}

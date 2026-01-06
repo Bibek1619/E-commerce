@@ -11,7 +11,7 @@ const Recommend = () => {
   const { user, loading } = useUser();
   const navigate = useNavigate();
 
-  useEffect(() => {
+useEffect(() => {
     const fetchProducts = async () => {
       try {
         const res = await axiosInstance.get("/api/products");
@@ -21,7 +21,7 @@ const Recommend = () => {
       }
     };
     fetchProducts();
-  }, []);
+  }, []);  
 
   const handleAddToCartClick = (product) => {
     if (loading) return;
@@ -69,7 +69,7 @@ const Recommend = () => {
   return (
     <div className="p-4">
       <h2 className="text-2xl font-bold mb-6 text-gray-800 text-center">
-        Recommended Products
+        Featured Product
       </h2>
 
       {/* Grid: 3 per row even on mobile */}
@@ -84,7 +84,7 @@ const Recommend = () => {
               <img
                 src={product.images?.[0] || product.image || "/placeholder.svg"}
                 alt={product.name}
-                className="h-24 w-full object-cover rounded"
+                className="h-30 w-full object-cover rounded"
               />
 
               <button

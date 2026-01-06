@@ -3,25 +3,44 @@ import { useNavigate } from "react-router-dom";
 import axiosInstance from "../../utils/axiosInstance";
 import CartPopup from "../../components/box/CartPopup";
 import { Heart, ShoppingCart, Star } from "lucide-react";
-import { useUser } from "../providers/userProvider"; // Adjust path if needed
-
+import { useUser } from "../providers/userProvider";
 const Special = () => {
   const [products, setProducts] = useState([]);
   const [popupProduct, setPopupProduct] = useState(null);
   const { user, loading } = useUser();
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const res = await axiosInstance.get("/api/products");
-        setProducts(res.data);
-      } catch (err) {
-        console.error("Error loading products:", err);
-      }
-    };
-    fetchProducts();
-  }, []);
+  // 🔁 Function to shuffle an array (Fisher-Yates algorithm)
+  const shuffleArray = (array) => {
+    const shuffled = [...array];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return shuffled;
+  };
+
+ useEffect(() => {
+  const fetchProducts = async () => {
+    try {
+      const res = await axiosInstance.get("/api/products");
+      let fetchedProducts = res.data;
+
+      // Shuffle the array
+      const shuffled = fetchedProducts
+        .map((item) => ({ item, sort: Math.random() }))
+        .sort((a, b) => a.sort - b.sort)
+        .map(({ item }) => item);
+
+      // Optional: limit how many to show (example: 8)
+      setProducts(shuffled);
+    } catch (err) {
+      console.error("Error loading products:", err);
+    }
+  };
+  fetchProducts();
+}, []);
+
 
   const handleAddToCartClick = (product) => {
     if (loading) return;
@@ -73,7 +92,7 @@ const Special = () => {
         Products You May Like
       </h2>
 
-      {/* Product grid: 2 per row on mobile, 2 on sm, 3 on md, 4 on lg */}
+      {/* Product grid */}
       <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
         {products.map((product) => (
           <div

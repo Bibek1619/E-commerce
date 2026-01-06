@@ -40,39 +40,38 @@ useEffect(() => {
   const query = new URLSearchParams(location.search);
   const isBuyNow = query.get("buyNow") === "true";
 
-  // Check sessionStorage first
-  const storedItems = sessionStorage.getItem("checkoutItems");
-  if (storedItems) {
-    const parsedItems = JSON.parse(storedItems).map((item) => ({
-      ...item,
-      _id: item._id || item.id,
-      productId: item.productId || item._id || item.id,
-    }));
-    setCheckoutItems(parsedItems);
+  // 1️⃣ Prioritize buyNow from context
+  if (isBuyNow && buyNow) {
+    setCheckoutItems([buyNow]);
+    sessionStorage.setItem("buyNowItem", JSON.stringify(buyNow)); // save for persistence
+    return;
+  }
 
-  } else if (isBuyNow) {
-    // Try to load buyNow from sessionStorage
+  // 2️⃣ Fallback: check sessionStorage for buyNow
+  if (isBuyNow) {
     const storedBuyNow = sessionStorage.getItem("buyNowItem");
     if (storedBuyNow) {
-      const item = JSON.parse(storedBuyNow);
-      setCheckoutItems([item]);
-    } else if (buyNow) {
-      setCheckoutItems([buyNow]);
-    } else {
-      setCheckoutItems([]); // nothing to show
+      setCheckoutItems([JSON.parse(storedBuyNow)]);
+      return;
     }
+  }
 
-  } else if (items.length > 0) {
+  // 3️⃣ If not buyNow, use regular cart items
+  if (items.length > 0) {
     const fixedItems = items.map((item) => ({
       ...item,
       _id: item._id || item.id,
       productId: item.productId || item._id,
     }));
     setCheckoutItems(fixedItems);
-  } else {
-    setCheckoutItems([]);
+    sessionStorage.setItem("checkoutItems", JSON.stringify(fixedItems)); // save cart items
+    return;
   }
+
+  // 4️⃣ Default: empty array
+  setCheckoutItems([]);
 }, [items, buyNow, location.search]);
+
 
 
 
@@ -114,7 +113,7 @@ useEffect(() => {
           {
             items: itemsToSend,
             customerEmail: address.email,
-            userId: user._id, // ✅ add this
+            userId: user._id, 
             address,
           }
         );

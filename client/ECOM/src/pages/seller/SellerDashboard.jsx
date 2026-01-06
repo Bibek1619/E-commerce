@@ -266,24 +266,28 @@ if (!seller) {
         </DialogContent>
       </Dialog>
 
-      <Dialog
-        open={!!editingProduct}
-        onOpenChange={() => setEditingProduct(null)}
-      >
-        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>Edit Product</DialogTitle>
-          </DialogHeader>
-          {editingProduct && (
-            <ProductForm
-              product={editingProduct}
-              onSubmit={handleEditProduct}
-              onCancel={() => setEditingProduct(null)}
-              isLoading={isLoading}
-            />
-          )}
-        </DialogContent>
-      </Dialog>
+    <Dialog
+  open={!!editingProduct}
+  onOpenChange={() => setEditingProduct(null)}
+>
+  <DialogContent className="w-full h-full max-w-full max-h-full p-0 overflow-y-auto">
+    <DialogHeader className="p-4 border-b">
+      <DialogTitle>Edit Product</DialogTitle>
+    </DialogHeader>
+
+    {editingProduct && (
+      <div className="p-6">
+        <ProductForm
+          product={editingProduct}
+          onSubmit={handleEditProduct}
+          onCancel={() => setEditingProduct(null)}
+          isLoading={isLoading}
+        />
+      </div>
+    )}
+  </DialogContent>
+</Dialog>
+
 
       <AlertDialog
         open={!!deleteProduct}
