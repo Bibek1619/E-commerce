@@ -22,7 +22,7 @@ import { Badge } from "@/components/ui/badge";
 import { useSignup } from "@/components/providers/SignupProvider";
 import axiosInstance from "@/utils/axiosInstance";
 import { API_PATHS } from "@/utils/apiPaths";
-import { UserContext } from "../../../components/providers/UserProvider";
+import { UserContext } from "@/components/providers/UserProvider";
 import { FaGoogle } from "react-icons/fa";
 
 const SignUp = ({ switchToLogin }) => {
