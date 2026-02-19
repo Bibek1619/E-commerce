@@ -11,7 +11,7 @@ import Layout from './components/layout/Layout'; // impLayout
 import SellerReg from './pages/Auth/seller/SellerReg';
 import SellerLog from './pages/Auth/seller/SellerLog';
 import SellerDashboard from './pages/seller/SellerDashboard';
-import Category from './pages/category/category';
+import Category from './pages/category/Category';
 import ProductPage from './pages/product/ProductPage';
 import SearchPage from './pages/search/SearchPage';
 import CheckoutPage from './pages/checkout/CheckoutPage';
