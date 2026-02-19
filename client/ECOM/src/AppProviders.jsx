@@ -1,6 +1,6 @@
 import { CartProvider } from "./components/providers/cart-provider";
 import { SignupProvider } from "./components/providers/SignupProvider";
-import UserProvider from "./components/providers/UserProvider"; // ✅ Import UserProvider
+import {UserProvider} from "@/components/providers/UserProvider"
 
 const AppProviders = ({ children }) => {
   return (
