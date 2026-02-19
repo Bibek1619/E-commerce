@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useUser } from "../../components/providers/UserProvider";
+import { useUser } from "@/components/providers/userProvider";
 import { Button } from "../../components/ui/button";
 import { Card, CardContent } from "../../components/ui/card";
 import {
