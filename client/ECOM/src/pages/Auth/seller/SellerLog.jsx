@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import axiosInstance from "../../../utils/axiosInstance";
 import { API_PATHS } from "../../../utils/apiPaths";
 import toast from "react-hot-toast";
-import { useUser } from "../../../components/providers/UserProvider";
+import { useUser } from "@/components/providers/UserProvider";
 
 const SellerLog = () => {
   const navigate = useNavigate();
