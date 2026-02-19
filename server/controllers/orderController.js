@@ -45,6 +45,8 @@ exports.createOrder = async (req, res) => {
         address,
         paymentMethod,
         total: sellerTotal,
+          paymentStatus: paymentMethod === "stripe" ? "pending" : "pending", // initially pending
+
       });
 
       await order.save();

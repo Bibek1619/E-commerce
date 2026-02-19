@@ -11,7 +11,7 @@ exports.createCheckoutSession = async (req, res) => {
       mode: 'payment',
       line_items: items.map(item => ({
         price_data: {
-          currency: 'usd',
+          currency: 'npr',
           product_data: { name: item.name },
           unit_amount: Math.round(item.price * 100), // in cents
         },
@@ -75,7 +75,7 @@ exports.verifyStripePayment = async (req, res) => {
       // 3️⃣ Update order in database
       const order = await Order.findOneAndUpdate(
         { stripeSessionId: sessionId },
-        { status: "paid" },
+        { paymentStatus: "paid" },
         { new: true }
       ).populate("seller user");
 

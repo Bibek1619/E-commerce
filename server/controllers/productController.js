@@ -60,7 +60,7 @@ const getProducts = async (req, res) => {
 // 🔹 Get products of the logged-in seller
 const getSellerProducts = async (req, res) => {
   try {
-    console.log("Logged-in Seller ID:", req.user._id); // debug
+   
     const products = await Product.find({ seller: req.user._id });
   
     res.json(products);
