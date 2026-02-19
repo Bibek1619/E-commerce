@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import axiosInstance from "../../utils/axiosInstance";
 import CartPopup from "../../components/box/CartPopup";
 import { Heart, ShoppingCart, Star } from "lucide-react";
-import { useUser } from "../providers/userProvider";
+import { useUser } from "../providers/UserProvider";
 const Special = () => {
   const [products, setProducts] = useState([]);
   const [popupProduct, setPopupProduct] = useState(null);
@@ -20,27 +20,26 @@ const Special = () => {
     return shuffled;
   };
 
- useEffect(() => {
-  const fetchProducts = async () => {
-    try {
-      const res = await axiosInstance.get("/api/products");
-      let fetchedProducts = res.data;
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const res = await axiosInstance.get("/api/products");
+        let fetchedProducts = res.data;
 
-      // Shuffle the array
-      const shuffled = fetchedProducts
-        .map((item) => ({ item, sort: Math.random() }))
-        .sort((a, b) => a.sort - b.sort)
-        .map(({ item }) => item);
+        // Shuffle the array
+        const shuffled = fetchedProducts
+          .map((item) => ({ item, sort: Math.random() }))
+          .sort((a, b) => a.sort - b.sort)
+          .map(({ item }) => item);
 
-      // Optional: limit how many to show (example: 8)
-      setProducts(shuffled);
-    } catch (err) {
-      console.error("Error loading products:", err);
-    }
-  };
-  fetchProducts();
-}, []);
-
+        // Optional: limit how many to show (example: 8)
+        setProducts(shuffled);
+      } catch (err) {
+        console.error("Error loading products:", err);
+      }
+    };
+    fetchProducts();
+  }, []);
 
   const handleAddToCartClick = (product) => {
     if (loading) return;
@@ -59,7 +58,10 @@ const Special = () => {
 
     for (let i = 0; i < fullStars; i++) {
       stars.push(
-        <Star key={`full-${i}`} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+        <Star
+          key={`full-${i}`}
+          className="w-4 h-4 fill-yellow-400 text-yellow-400"
+        />,
       );
     }
     if (hasHalfStar) {
@@ -68,14 +70,14 @@ const Special = () => {
           key="half"
           className="w-4 h-4 text-yellow-400"
           style={{ clipPath: "inset(0 50% 0 0)", fill: "currentColor" }}
-        />
+        />,
       );
       stars.push(
         <Star
           key="half-empty"
           className="w-4 h-4 text-gray-300 absolute"
           style={{ clipPath: "inset(0 0 0 50%)", fill: "currentColor" }}
-        />
+        />,
       );
     }
     for (let i = 0; i < emptyStars; i++) {
@@ -139,7 +141,8 @@ const Special = () => {
             </h3>
 
             <div className="mt-1">
-              {product.discountedPrice && product.discountedPrice < product.price ? (
+              {product.discountedPrice &&
+              product.discountedPrice < product.price ? (
                 <div>
                   <span className="text-orange-600 font-bold text-sm sm:text-lg">
                     Rs. {product.discountedPrice.toLocaleString()}
@@ -167,7 +170,10 @@ const Special = () => {
 
       {/* Cart popup */}
       {popupProduct && (
-        <CartPopup product={popupProduct} onClose={() => setPopupProduct(null)} />
+        <CartPopup
+          product={popupProduct}
+          onClose={() => setPopupProduct(null)}
+        />
       )}
     </div>
   );

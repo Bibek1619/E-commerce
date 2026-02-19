@@ -1,8 +1,13 @@
 import React, { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
-  Eye, EyeOff, User, Mail, LockKeyhole,
-  CheckCircle, AlertCircle
+  Eye,
+  EyeOff,
+  User,
+  Mail,
+  LockKeyhole,
+  CheckCircle,
+  AlertCircle,
 } from "lucide-react";
 import { toast } from "react-hot-toast";
 import { motion } from "framer-motion";
@@ -17,9 +22,8 @@ import { Badge } from "@/components/ui/badge";
 import { useSignup } from "@/components/providers/SignupProvider";
 import axiosInstance from "@/utils/axiosInstance";
 import { API_PATHS } from "@/utils/apiPaths";
-import { UserContext } from "@/components/providers/userProvider";
+import { UserContext } from "@/components/providers/UserProvider";
 import { FaGoogle } from "react-icons/fa";
-
 
 const SignUp = ({ switchToLogin }) => {
   const navigate = useNavigate();
@@ -73,7 +77,12 @@ const SignUp = ({ switchToLogin }) => {
 
   // Validation
   const validate = () => {
-    const newErrors = { email: "", name: "", password: "", confirmPassword: "" };
+    const newErrors = {
+      email: "",
+      name: "",
+      password: "",
+      confirmPassword: "",
+    };
 
     if (!safeFormData.name.trim()) newErrors.name = "Name is required";
     if (!safeFormData.email.trim()) newErrors.email = "Email is required";
@@ -159,7 +168,10 @@ const SignUp = ({ switchToLogin }) => {
           <form onSubmit={handleSubmit} className="space-y-4">
             {/* Name Field */}
             <div className="space-y-2">
-              <Label htmlFor="name" className="text-sm font-semibold text-gray-700">
+              <Label
+                htmlFor="name"
+                className="text-sm font-semibold text-gray-700"
+              >
                 Full Name
               </Label>
               <div className="relative">
@@ -171,7 +183,9 @@ const SignUp = ({ switchToLogin }) => {
                   onChange={handleChange("name")}
                   placeholder="Enter your full name"
                   className={`pl-10 h-12 bg-gray-50 border-gray-300 focus:border-orange-500 focus:ring-2 text-gray-900 focus:ring-orange-200 ${
-                    errors.name ? "border-red-500 focus:border-red-500 focus:ring-red-200" : ""
+                    errors.name
+                      ? "border-red-500 focus:border-red-500 focus:ring-red-200"
+                      : ""
                   }`}
                 />
               </div>
@@ -185,7 +199,10 @@ const SignUp = ({ switchToLogin }) => {
 
             {/* Email */}
             <div className="space-y-2">
-              <Label htmlFor="email" className="text-sm font-semibold text-gray-700">
+              <Label
+                htmlFor="email"
+                className="text-sm font-semibold text-gray-700"
+              >
                 Email Address
               </Label>
               <div className="relative">
@@ -197,7 +214,9 @@ const SignUp = ({ switchToLogin }) => {
                   onChange={handleChange("email")}
                   placeholder="Enter your email"
                   className={`pl-10 h-12 bg-gray-50 border-gray-300 text-gray-900 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 ${
-                    errors.email ? "border-red-500 focus:border-red-500 focus:ring-red-200" : ""
+                    errors.email
+                      ? "border-red-500 focus:border-red-500 focus:ring-red-200"
+                      : ""
                   }`}
                 />
               </div>
@@ -211,7 +230,10 @@ const SignUp = ({ switchToLogin }) => {
 
             {/* Password */}
             <div className="space-y-2">
-              <Label htmlFor="password" className="text-sm font-semibold text-gray-700">
+              <Label
+                htmlFor="password"
+                className="text-sm font-semibold text-gray-700"
+              >
                 Password
               </Label>
               <div className="relative">
@@ -223,7 +245,9 @@ const SignUp = ({ switchToLogin }) => {
                   onChange={handleChange("password")}
                   placeholder="Create a strong password"
                   className={`pl-10 pr-12 h-12 bg-gray-50 text-gray-900 border-gray-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 ${
-                    errors.password ? "border-red-500 focus:border-red-500 focus:ring-red-200" : ""
+                    errors.password
+                      ? "border-red-500 focus:border-red-500 focus:ring-red-200"
+                      : ""
                   }`}
                 />
                 <Button
@@ -233,7 +257,11 @@ const SignUp = ({ switchToLogin }) => {
                   className="absolute right-1 top-1/2 -translate-y-1/2 h-10 w-10 text-gray-900"
                   onClick={() => setShowPassword((prev) => !prev)}
                 >
-                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  {showPassword ? (
+                    <EyeOff className="h-4 w-4" />
+                  ) : (
+                    <Eye className="h-4 w-4" />
+                  )}
                 </Button>
               </div>
               {errors.password && (
@@ -246,7 +274,9 @@ const SignUp = ({ switchToLogin }) => {
                 <div className="mt-2">
                   <div className="flex items-center justify-between text-xs">
                     <span>Password Strength:</span>
-                    <Badge className={`${getStrengthColor(passwordStrength)} text-white`}>
+                    <Badge
+                      className={`${getStrengthColor(passwordStrength)} text-white`}
+                    >
                       {getStrengthText(passwordStrength)}
                     </Badge>
                   </div>
@@ -255,7 +285,9 @@ const SignUp = ({ switchToLogin }) => {
                       <div
                         key={i}
                         className={`h-1.5 flex-1 rounded-full ${
-                          i < passwordStrength ? getStrengthColor(passwordStrength) : "bg-gray-200"
+                          i < passwordStrength
+                            ? getStrengthColor(passwordStrength)
+                            : "bg-gray-200"
                         }`}
                       />
                     ))}
@@ -266,7 +298,10 @@ const SignUp = ({ switchToLogin }) => {
 
             {/* Confirm Password */}
             <div className="space-y-2">
-              <Label htmlFor="confirmPassword" className="text-sm font-semibold text-gray-700">
+              <Label
+                htmlFor="confirmPassword"
+                className="text-sm font-semibold text-gray-700"
+              >
                 Confirm Password
               </Label>
               <div className="relative">
@@ -278,7 +313,9 @@ const SignUp = ({ switchToLogin }) => {
                   onChange={handleChange("confirmPassword")}
                   placeholder="Confirm your password"
                   className={`pl-10 pr-12 h-12 bg-gray-50 text-gray-900  border-gray-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 ${
-                    errors.confirmPassword ? "border-red-500 focus:border-red-500 focus:ring-red-200" : ""
+                    errors.confirmPassword
+                      ? "border-red-500 focus:border-red-500 focus:ring-red-200"
+                      : ""
                   }`}
                 />
                 <Button
@@ -288,7 +325,11 @@ const SignUp = ({ switchToLogin }) => {
                   className="absolute right-1 top-1/2 -translate-y-1/2 h-10 w-10"
                   onClick={() => setShowConfirmPassword((prev) => !prev)}
                 >
-                  {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  {showConfirmPassword ? (
+                    <EyeOff className="h-4 w-4" />
+                  ) : (
+                    <Eye className="h-4 w-4" />
+                  )}
                 </Button>
               </div>
               {errors.confirmPassword && (
@@ -315,7 +356,10 @@ const SignUp = ({ switchToLogin }) => {
                 onCheckedChange={() => setAcceptedTerms((prev) => !prev)}
                 className="mt-0.5 border-orange-300 data-[state=checked]:bg-orange-500 data-[state=checked]:border-orange-500"
               />
-              <Label htmlFor="terms" className="text-sm text-gray-700 leading-relaxed cursor-pointer flex-1">
+              <Label
+                htmlFor="terms"
+                className="text-sm text-gray-700 leading-relaxed cursor-pointer flex-1"
+              >
                 I agree to the{" "}
                 <button
                   type="button"
@@ -362,8 +406,8 @@ const SignUp = ({ switchToLogin }) => {
             className="w-full h-12 flex items-center justify-center gap-3 text-gray-700"
             onClick={handleGoogleSignIn}
           >
-          <FaGoogle className="h-5 w-5" />
-  Continue with Google
+            <FaGoogle className="h-5 w-5" />
+            Continue with Google
           </Button>
 
           {/* Switch */}

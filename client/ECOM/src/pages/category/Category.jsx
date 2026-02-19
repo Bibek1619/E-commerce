@@ -7,7 +7,7 @@ import Layout from "@/components/layout/Layout";
 import CartPopup from "@/components/box/CartPopup";
 import { Heart, ShoppingCart, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useUser } from "@/components/providers/userProvider";
+import { useUser } from "@/components/providers/UserProvider";
 
 const ITEMS_PER_PAGE = 8;
 
@@ -34,7 +34,7 @@ const Category = () => {
           res = await axiosInstance.get(API_PATHS.PRODUCT.GET_ALL);
         } else {
           res = await axiosInstance.get(
-            API_PATHS.PRODUCT.GET_BY_CATEGORY(category)
+            API_PATHS.PRODUCT.GET_BY_CATEGORY(category),
           );
         }
 
@@ -71,7 +71,10 @@ const Category = () => {
 
     for (let i = 0; i < fullStars; i++) {
       stars.push(
-        <Star key={`full-${i}`} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+        <Star
+          key={`full-${i}`}
+          className="w-4 h-4 fill-yellow-400 text-yellow-400"
+        />,
       );
     }
     if (hasHalfStar) {
@@ -80,7 +83,7 @@ const Category = () => {
           key="half"
           className="w-4 h-4 text-yellow-400"
           style={{ clipPath: "inset(0 50% 0 0)", fill: "currentColor" }}
-        />
+        />,
       );
     }
     for (let i = 0; i < emptyStars; i++) {
@@ -92,7 +95,10 @@ const Category = () => {
 
   const totalPages = Math.ceil(products.length / ITEMS_PER_PAGE);
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-  const currentProducts = products.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+  const currentProducts = products.slice(
+    startIndex,
+    startIndex + ITEMS_PER_PAGE,
+  );
 
   if (loading) return <p className="text-center py-6">Loading products...</p>;
   if (error) return <p className="text-center text-red-600 py-6">{error}</p>;
@@ -118,7 +124,11 @@ const Category = () => {
                 >
                   <div className="relative">
                     <img
-                      src={product.images?.[0] || product.image || "/images/default-product.png"}
+                      src={
+                        product.images?.[0] ||
+                        product.image ||
+                        "/images/default-product.png"
+                      }
                       alt={product.name}
                       className="h-28 sm:h-36 md:h-40 w-full object-cover rounded"
                     />
@@ -148,7 +158,8 @@ const Category = () => {
                   </h2>
 
                   <div className="mt-1">
-                    {product.discountedPrice && product.discountedPrice < product.price ? (
+                    {product.discountedPrice &&
+                    product.discountedPrice < product.price ? (
                       <div>
                         <span className="text-orange-600 font-bold text-sm sm:text-lg">
                           Rs. {product.discountedPrice.toLocaleString()}
@@ -208,7 +219,10 @@ const Category = () => {
 
       {/* Cart Popup */}
       {popupProduct && (
-        <CartPopup product={popupProduct} onClose={() => setPopupProduct(null)} />
+        <CartPopup
+          product={popupProduct}
+          onClose={() => setPopupProduct(null)}
+        />
       )}
     </Layout>
   );

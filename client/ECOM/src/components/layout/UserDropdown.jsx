@@ -9,11 +9,10 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
 } from "../ui/dropdown-menu";
-import { useUser } from "../providers/userProvider";
+import { useUser } from "../providers/UserProvider";
 import AuthModal from "../auth/AuthModal";
 import Login from "@/pages/Auth/user/Login";
 import SignUp from "@/pages/Auth/user/SignUp";
-
 
 const UserDropdown = () => {
   const { user, clearUser } = useUser();
@@ -46,25 +45,24 @@ const UserDropdown = () => {
           </DropdownMenuContent>
         </DropdownMenu>
 
-       <AuthModal
-  open={isModalOpen}
-  onClose={() => setModalType(null)}
-  title={modalType === "login" ? "Sign In" : "Sign Up"}
->
-  {modalType === "login" && (
-    <Login
-      onSuccess={() => setModalType(null)}
-      switchToSignup={() => setModalType("signup")} // ✅ pass function here
-    />
-  )}
-  {modalType === "signup" && (
-    <SignUp
-      onSuccess={() => setModalType(null)}
-      switchToLogin={() => setModalType("login")} // ✅ pass function here
-    />
-  )}
-</AuthModal>
-
+        <AuthModal
+          open={isModalOpen}
+          onClose={() => setModalType(null)}
+          title={modalType === "login" ? "Sign In" : "Sign Up"}
+        >
+          {modalType === "login" && (
+            <Login
+              onSuccess={() => setModalType(null)}
+              switchToSignup={() => setModalType("signup")} // ✅ pass function here
+            />
+          )}
+          {modalType === "signup" && (
+            <SignUp
+              onSuccess={() => setModalType(null)}
+              switchToLogin={() => setModalType("login")} // ✅ pass function here
+            />
+          )}
+        </AuthModal>
       </>
     );
   }

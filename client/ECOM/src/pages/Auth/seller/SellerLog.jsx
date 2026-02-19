@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import axiosInstance from "../../../utils/axiosInstance";
 import { API_PATHS } from "../../../utils/apiPaths";
 import toast from "react-hot-toast";
-import { useUser } from "../../../components/providers/userProvider";
+import { useUser } from "../../../components/providers/UserProvider";
 
 const SellerLog = () => {
   const navigate = useNavigate();
@@ -32,17 +32,19 @@ const SellerLog = () => {
         {
           email: formData.email,
           password: formData.password,
-        }
+        },
       );
 
       localStorage.setItem("token", data.token);
       toast.success("Login successful!");
       await refreshUser();
-      
+
       navigate("/seller/dashboard");
     } catch (err) {
       console.error(err);
-      toast.error(err.response?.data?.message || "Login failed. Please try again.");
+      toast.error(
+        err.response?.data?.message || "Login failed. Please try again.",
+      );
     } finally {
       setLoading(false);
     }
@@ -56,7 +58,9 @@ const SellerLog = () => {
           <div className="inline-flex items-center justify-center w-16 h-16 bg-orange-100 rounded-full mb-4 shadow-sm">
             <Store className="w-8 h-8 text-orange-600" />
           </div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Welcome Back</h1>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+            Welcome Back
+          </h1>
           <p className="text-gray-600">Sign in to your seller account</p>
         </div>
 
@@ -65,7 +69,10 @@ const SellerLog = () => {
           <div className="p-8 space-y-6">
             {/* Email Field */}
             <div className="space-y-2">
-              <label htmlFor="email" className="text-sm font-medium text-gray-700">
+              <label
+                htmlFor="email"
+                className="text-sm font-medium text-gray-700"
+              >
                 Email Address
               </label>
               <div className="relative">
@@ -87,7 +94,10 @@ const SellerLog = () => {
 
             {/* Password Field */}
             <div className="space-y-2">
-              <label htmlFor="password" className="text-sm font-medium text-gray-700">
+              <label
+                htmlFor="password"
+                className="text-sm font-medium text-gray-700"
+              >
                 Password
               </label>
               <div className="relative">
@@ -109,7 +119,11 @@ const SellerLog = () => {
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-orange-600 transition-colors"
                 >
-                  {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                  {showPassword ? (
+                    <EyeOff className="w-5 h-5" />
+                  ) : (
+                    <Eye className="w-5 h-5" />
+                  )}
                 </button>
               </div>
             </div>
@@ -168,12 +182,18 @@ const SellerLog = () => {
         <div className="mt-8 text-center space-y-2">
           <p className="text-sm text-gray-500">
             Need help?{" "}
-            <button onClick={() => navigate("/support")} className="text-orange-600 hover:underline">
+            <button
+              onClick={() => navigate("/support")}
+              className="text-orange-600 hover:underline"
+            >
               Contact Support
             </button>
           </p>
           <p className="text-sm text-gray-500">
-            <button onClick={() => navigate("/")} className="text-orange-600 hover:underline">
+            <button
+              onClick={() => navigate("/")}
+              className="text-orange-600 hover:underline"
+            >
               Back to Homepage
             </button>
           </p>

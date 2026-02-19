@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useUser } from "../../components/providers/userProvider";
+import { useUser } from "../../components/providers/UserProvider";
 import { Button } from "../../components/ui/button";
 import { Card, CardContent } from "../../components/ui/card";
 import {
@@ -37,7 +37,7 @@ import SellerOrdersSection from "./components/SellerOrderSection";
 import toast from "react-hot-toast";
 
 export default function SellerDashboard() {
-   const { user: seller, loading, clearUser } = useUser();
+  const { user: seller, loading, clearUser } = useUser();
   const navigate = useNavigate();
 
   const [products, setProducts] = useState([]);
@@ -56,7 +56,7 @@ export default function SellerDashboard() {
     try {
       setIsLoading(true);
       const { data } = await axiosInstance.get(
-        API_PATHS.PRODUCT.GET_MY_PRODUCTS
+        API_PATHS.PRODUCT.GET_MY_PRODUCTS,
       );
       setProducts(data);
       setIsLoading(false);
@@ -72,29 +72,27 @@ export default function SellerDashboard() {
     }
   }, [loading, seller]);
 
- if (loading) {
-  return (
-    <div className="flex items-center justify-center min-h-screen">
-      Loading...
-    </div>
-  );
-}
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        Loading...
+      </div>
+    );
+  }
 
-if (!seller) {
-  return (
-    <div className="flex items-center justify-center min-h-screen">
-      No seller data found.
-    </div>
-  );
-}
-
+  if (!seller) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        No seller data found.
+      </div>
+    );
+  }
 
   const handleLogout = () => {
     localStorage.removeItem("token");
     clearUser(); // ✅ clear context state
     navigate("/");
   };
-
 
   // Handle Add Product
   const handleAddProduct = async (productData) => {
@@ -110,10 +108,9 @@ if (!seller) {
       formData.append("stock", productData.stock || 0);
 
       // Append each category separately
-    if (productData.variants && productData.variants.length > 0) {
-  formData.append("variants", JSON.stringify(productData.variants));
-}
-
+      if (productData.variants && productData.variants.length > 0) {
+        formData.append("variants", JSON.stringify(productData.variants));
+      }
 
       // Append images if available
       if (productData.images?.length) {
@@ -122,7 +119,7 @@ if (!seller) {
 
       const { data } = await axiosInstance.post(
         API_PATHS.PRODUCT.CREATE,
-        formData
+        formData,
       );
       setProducts((prev) => [data, ...prev]);
       setShowProductForm(false);
@@ -146,21 +143,20 @@ if (!seller) {
       formData.append("description", productData.description || "");
       formData.append(
         "price",
-        productData.price ? Number(productData.price) : 0
+        productData.price ? Number(productData.price) : 0,
       );
       formData.append(
         "discountedPrice",
-        productData.discountedPrice ? Number(productData.discountedPrice) : 0
+        productData.discountedPrice ? Number(productData.discountedPrice) : 0,
       );
       formData.append(
         "stock",
-        productData.stock ? Number(productData.stock) : 0
+        productData.stock ? Number(productData.stock) : 0,
       );
 
       if (productData.variants && productData.variants.length > 0) {
-  formData.append("variants", JSON.stringify(productData.variants));
-}
-
+        formData.append("variants", JSON.stringify(productData.variants));
+      }
 
       if (productData.images?.length) {
         productData.images.forEach((file) => formData.append("images", file));
@@ -168,7 +164,7 @@ if (!seller) {
 
       const { data } = await axiosInstance.put(
         API_PATHS.PRODUCT.UPDATE(editingProduct._id),
-        formData
+        formData,
       );
 
       setProducts((prev) => prev.map((p) => (p._id === data._id ? data : p)));
@@ -244,10 +240,10 @@ if (!seller) {
             <AnalyticsCharts salesData={salesData} />
           </TabsContent>
 
-          <TabsContent value="orders">{/* Profile content */}
+          <TabsContent value="orders">
+            {/* Profile content */}
 
-            <SellerOrdersSection/>
-
+            <SellerOrdersSection />
           </TabsContent>
         </Tabs>
       </div>
@@ -266,46 +262,48 @@ if (!seller) {
         </DialogContent>
       </Dialog>
 
-    <Dialog
-  open={!!editingProduct}
-  onOpenChange={() => setEditingProduct(null)}
->
-  <DialogContent className="w-full h-full max-w-full max-h-full p-0 overflow-y-auto">
-    <DialogHeader className="p-4 border-b">
-      <DialogTitle>Edit Product</DialogTitle>
-    </DialogHeader>
+      <Dialog
+        open={!!editingProduct}
+        onOpenChange={() => setEditingProduct(null)}
+      >
+        <DialogContent className="w-full h-full max-w-full max-h-full p-0 overflow-y-auto">
+          <DialogHeader className="p-4 border-b">
+            <DialogTitle>Edit Product</DialogTitle>
+          </DialogHeader>
 
-    {editingProduct && (
-      <div className="p-6">
-        <ProductForm
-          product={editingProduct}
-          onSubmit={handleEditProduct}
-          onCancel={() => setEditingProduct(null)}
-          isLoading={isLoading}
-        />
-      </div>
-    )}
-  </DialogContent>
-</Dialog>
-
+          {editingProduct && (
+            <div className="p-6">
+              <ProductForm
+                product={editingProduct}
+                onSubmit={handleEditProduct}
+                onCancel={() => setEditingProduct(null)}
+                isLoading={isLoading}
+              />
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
 
       <AlertDialog
         open={!!deleteProduct}
         onOpenChange={() => setDeleteProduct(null)}
       >
-       <AlertDialogContent className="bg-white rounded-lg shadow-lg text-gray-800">
-
+        <AlertDialogContent className="bg-white rounded-lg shadow-lg text-gray-800">
           <AlertDialogHeader>
-            <AlertDialogTitle className='font-extrabold text-2xl '>Delete Product</AlertDialogTitle>
-            <AlertDialogDescription className={
-              "mt-1 text-gray-700 text-[15px] font-medium"
-            }>
+            <AlertDialogTitle className="font-extrabold text-2xl ">
+              Delete Product
+            </AlertDialogTitle>
+            <AlertDialogDescription
+              className={"mt-1 text-gray-700 text-[15px] font-medium"}
+            >
               Are you sure you want to delete "{deleteProduct?.name}"? This
               action cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel className='cursor-pointer'>Cancel</AlertDialogCancel>
+            <AlertDialogCancel className="cursor-pointer">
+              Cancel
+            </AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDeleteProduct}
               className="bg-red-600 hover:bg-red-700 text-white cursor-pointer"

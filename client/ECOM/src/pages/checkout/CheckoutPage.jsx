@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation, Link } from "react-router-dom";
-import { useUser } from "@/components/providers/userProvider";
+import { useUser } from "@/components/providers/UserProvider";
 import { useCart } from "@/components/providers/cart-provider";
 import CheckoutForm from "./CheckoutForm";
 import OrderSummary from "./OrderSummary";
@@ -29,58 +29,55 @@ function CheckoutPage() {
   useEffect(() => {
     if (!loading && !user) {
       const redirectUrl = encodeURIComponent(
-        location.pathname + location.search
+        location.pathname + location.search,
       );
       navigate(`/auth/signin?redirect=${redirectUrl}`, { replace: true });
     }
   }, [user, loading, navigate, location]);
 
   // Load checkout items
-useEffect(() => {
-  const query = new URLSearchParams(location.search);
-  const isBuyNow = query.get("buyNow") === "true";
+  useEffect(() => {
+    const query = new URLSearchParams(location.search);
+    const isBuyNow = query.get("buyNow") === "true";
 
-  // 1️⃣ Prioritize buyNow from context
-  if (isBuyNow && buyNow) {
-    setCheckoutItems([buyNow]);
-    sessionStorage.setItem("buyNowItem", JSON.stringify(buyNow)); // save for persistence
-    return;
-  }
-
-  // 2️⃣ Fallback: check sessionStorage for buyNow
-  if (isBuyNow) {
-    const storedBuyNow = sessionStorage.getItem("buyNowItem");
-    if (storedBuyNow) {
-      setCheckoutItems([JSON.parse(storedBuyNow)]);
+    // 1️⃣ Prioritize buyNow from context
+    if (isBuyNow && buyNow) {
+      setCheckoutItems([buyNow]);
+      sessionStorage.setItem("buyNowItem", JSON.stringify(buyNow)); // save for persistence
       return;
     }
-  }
 
-  // 3️⃣ If not buyNow, use regular cart items
-  if (items.length > 0) {
-    const fixedItems = items.map((item) => ({
-      ...item,
-      _id: item._id || item.id,
-      productId: item.productId || item._id,
-    }));
-    setCheckoutItems(fixedItems);
-    sessionStorage.setItem("checkoutItems", JSON.stringify(fixedItems)); // save cart items
-    return;
-  }
+    // 2️⃣ Fallback: check sessionStorage for buyNow
+    if (isBuyNow) {
+      const storedBuyNow = sessionStorage.getItem("buyNowItem");
+      if (storedBuyNow) {
+        setCheckoutItems([JSON.parse(storedBuyNow)]);
+        return;
+      }
+    }
 
-  // 4️⃣ Default: empty array
-  setCheckoutItems([]);
-}, [items, buyNow, location.search]);
+    // 3️⃣ If not buyNow, use regular cart items
+    if (items.length > 0) {
+      const fixedItems = items.map((item) => ({
+        ...item,
+        _id: item._id || item.id,
+        productId: item.productId || item._id,
+      }));
+      setCheckoutItems(fixedItems);
+      sessionStorage.setItem("checkoutItems", JSON.stringify(fixedItems)); // save cart items
+      return;
+    }
 
-
-
+    // 4️⃣ Default: empty array
+    setCheckoutItems([]);
+  }, [items, buyNow, location.search]);
 
   if (loading || !user || checkoutItems.length === 0) return <h1>loading</h1>;
 
   // Total calculation
   const total = checkoutItems.reduce(
     (sum, item) => sum + item.price * item.quantity,
-    0
+    0,
   );
 
   // Place order
@@ -102,7 +99,7 @@ useEffect(() => {
       price: item.price,
       quantity: item.quantity,
       image: item.image,
-      seller: item.sellerId || item.seller , // ✅ add this li
+      seller: item.sellerId || item.seller, // ✅ add this li
     }));
 
     // 🔹 Stripe payment
@@ -113,22 +110,22 @@ useEffect(() => {
           {
             items: itemsToSend,
             customerEmail: address.email,
-            userId: user._id, 
+            userId: user._id,
             address,
-          }
+          },
         );
         if (response.data.url) {
           window.location = response.data.url; // redirect to Stripe Checkout
         }
       } catch (err) {
-     // <-- Replace this block with the new debug version
-    console.error("Stripe checkout failed:");
-    if (err.response) {
-      console.error("Status:", err.response.status);
-      console.error("Data:", err.response.data);
-    } else {
-      console.error(err.message);
-    }
+        // <-- Replace this block with the new debug version
+        console.error("Stripe checkout failed:");
+        if (err.response) {
+          console.error("Status:", err.response.status);
+          console.error("Data:", err.response.data);
+        } else {
+          console.error(err.message);
+        }
         alert("❌ Failed to initiate Stripe payment. Check console.");
       }
       return; // stop here, we redirect to Stripe
@@ -142,7 +139,7 @@ useEffect(() => {
         paymentMethod: payment,
         total: checkoutItems.reduce(
           (sum, item) => sum + item.price * item.quantity,
-          0
+          0,
         ),
       });
 
@@ -150,7 +147,7 @@ useEffect(() => {
     } catch (error) {
       alert(
         "❌ Failed to place order: " +
-          (error.response?.data?.message || error.message)
+          (error.response?.data?.message || error.message),
       );
     }
   };

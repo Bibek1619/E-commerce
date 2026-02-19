@@ -4,7 +4,7 @@ import axiosInstance from "@/utils/axiosInstance";
 import Layout from "@/components/layout/Layout";
 import { Heart, ShoppingCart, Star } from "lucide-react";
 import CartPopup from "@/components/box/CartPopup";
-import {useUser} from "@/components/providers/userProvider";
+import { useUser } from "@/components/providers/UserProvider";
 
 export default function SearchPage() {
   const location = useLocation();
@@ -21,7 +21,7 @@ export default function SearchPage() {
     try {
       setLoading(true);
       const res = await axiosInstance.get(
-        `/api/products/search?q=${encodeURIComponent(q)}`
+        `/api/products/search?q=${encodeURIComponent(q)}`,
       );
       setProducts(res.data.products || []);
     } catch (err) {
@@ -56,7 +56,7 @@ export default function SearchPage() {
         <Star
           key={`full-${i}`}
           className="w-4 h-4 fill-yellow-400 text-yellow-400"
-        />
+        />,
       );
     }
     if (hasHalfStar) {
@@ -65,14 +65,14 @@ export default function SearchPage() {
           key="half"
           className="w-4 h-4 text-yellow-400"
           style={{ clipPath: "inset(0 50% 0 0)", fill: "currentColor" }}
-        />
+        />,
       );
       stars.push(
         <Star
           key="half-empty"
           className="w-4 h-4 text-gray-300 absolute"
           style={{ clipPath: "inset(0 0 0 50%)", fill: "currentColor" }}
-        />
+        />,
       );
     }
     for (let i = 0; i < emptyStars; i++) {
@@ -144,7 +144,8 @@ export default function SearchPage() {
             </h3>
 
             <div className="mt-1">
-              {product.discountedPrice && product.discountedPrice < product.price ? (
+              {product.discountedPrice &&
+              product.discountedPrice < product.price ? (
                 <div>
                   <span className="text-orange-600 font-bold text-lg">
                     Rs. {product.discountedPrice.toLocaleString()}
@@ -170,7 +171,10 @@ export default function SearchPage() {
         ))}
 
         {popupProduct && (
-          <CartPopup product={popupProduct} onClose={() => setPopupProduct(null)} />
+          <CartPopup
+            product={popupProduct}
+            onClose={() => setPopupProduct(null)}
+          />
         )}
       </div>
     </Layout>

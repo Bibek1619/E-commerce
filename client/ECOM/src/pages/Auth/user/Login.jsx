@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import axiosInstance from "@/utils/axiosInstance";
 import { API_PATHS } from "@/utils/apiPaths";
-import { UserContext } from "@/components/providers/userProvider";
+import { UserContext } from "@/components/providers/UserProvider";
 
 const Login = ({ onSuccess, switchToSignup }) => {
   const navigate = useNavigate();
@@ -33,7 +33,7 @@ const Login = ({ onSuccess, switchToSignup }) => {
       const { token } = response.data;
       localStorage.setItem("token", token);
 
-      await refreshUser();// Refresh user context after login
+      await refreshUser(); // Refresh user context after login
       toast.success("Signed in successfully!");
 
       if (onSuccess) {
@@ -65,7 +65,9 @@ const Login = ({ onSuccess, switchToSignup }) => {
         <form onSubmit={handleSubmit} className="space-y-5">
           {/* Email */}
           <div>
-            <Label htmlFor="email" className="text-gray-700">Email</Label>
+            <Label htmlFor="email" className="text-gray-700">
+              Email
+            </Label>
             <Input
               id="email"
               type="email"
@@ -79,31 +81,36 @@ const Login = ({ onSuccess, switchToSignup }) => {
           </div>
 
           {/* Password */}
-         <div>
-  <Label htmlFor="password" className="text-gray-700">Password</Label>
-  <div className="relative mt-1">
-    <Input
-      id="password"
-      type={showPassword ? "text" : "password"}
-      value={formData.password}
-      onChange={(e) =>
-        setFormData({ ...formData, password: e.target.value })
-      }
-      required
-      className="pr-12 border-gray-300 focus:ring-orange-500 focus:border-orange-500 text-gray-900"
-    />
-    <Button
-      type="button"
-      variant="ghost"
-      size="sm"
-      className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-800"
-      onClick={() => setShowPassword(!showPassword)}
-    >
-      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-    </Button>
-  </div>
-</div>
-
+          <div>
+            <Label htmlFor="password" className="text-gray-700">
+              Password
+            </Label>
+            <div className="relative mt-1">
+              <Input
+                id="password"
+                type={showPassword ? "text" : "password"}
+                value={formData.password}
+                onChange={(e) =>
+                  setFormData({ ...formData, password: e.target.value })
+                }
+                required
+                className="pr-12 border-gray-300 focus:ring-orange-500 focus:border-orange-500 text-gray-900"
+              />
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-800"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                {showPassword ? (
+                  <EyeOff className="h-4 w-4" />
+                ) : (
+                  <Eye className="h-4 w-4" />
+                )}
+              </Button>
+            </div>
+          </div>
 
           {/* Submit */}
           <Button

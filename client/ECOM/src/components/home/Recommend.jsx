@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import axiosInstance from "../../utils/axiosInstance";
 import CartPopup from "../../components/box/CartPopup";
 import { Heart, ShoppingCart, Star } from "lucide-react";
-import { useUser } from "../providers/userProvider";
+import { useUser } from "../providers/UserProvider";
 
 const Recommend = () => {
   const [products, setProducts] = useState([]);
@@ -11,7 +11,7 @@ const Recommend = () => {
   const { user, loading } = useUser();
   const navigate = useNavigate();
 
-useEffect(() => {
+  useEffect(() => {
     const fetchProducts = async () => {
       try {
         const res = await axiosInstance.get("/api/products");
@@ -21,7 +21,7 @@ useEffect(() => {
       }
     };
     fetchProducts();
-  }, []);  
+  }, []);
 
   const handleAddToCartClick = (product) => {
     if (loading) return;
@@ -40,7 +40,10 @@ useEffect(() => {
 
     for (let i = 0; i < fullStars; i++) {
       stars.push(
-        <Star key={`full-${i}`} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+        <Star
+          key={`full-${i}`}
+          className="w-4 h-4 fill-yellow-400 text-yellow-400"
+        />,
       );
     }
     if (hasHalfStar) {
@@ -49,14 +52,14 @@ useEffect(() => {
           key="half"
           className="w-4 h-4 text-yellow-400"
           style={{ clipPath: "inset(0 50% 0 0)", fill: "currentColor" }}
-        />
+        />,
       );
       stars.push(
         <Star
           key="half-empty"
           className="w-4 h-4 text-gray-300 absolute"
           style={{ clipPath: "inset(0 0 0 50%)", fill: "currentColor" }}
-        />
+        />,
       );
     }
     for (let i = 0; i < emptyStars; i++) {
@@ -117,7 +120,8 @@ useEffect(() => {
             </h3>
 
             <div className="mt-1">
-              {product.discountedPrice && product.discountedPrice < product.price ? (
+              {product.discountedPrice &&
+              product.discountedPrice < product.price ? (
                 <div>
                   <span className="text-orange-600 font-bold text-sm">
                     Rs. {product.discountedPrice.toLocaleString()}
@@ -144,7 +148,10 @@ useEffect(() => {
       </div>
 
       {popupProduct && (
-        <CartPopup product={popupProduct} onClose={() => setPopupProduct(null)} />
+        <CartPopup
+          product={popupProduct}
+          onClose={() => setPopupProduct(null)}
+        />
       )}
     </div>
   );
