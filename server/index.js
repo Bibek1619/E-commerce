@@ -3,7 +3,6 @@
 require("dotenv").config();
 
 const express = require("express");
-const mongoose = require("mongoose");
 const cors = require("cors");
 const path = require("path"); // ✅ needed for static path
 const connectDB = require("./config/db");
@@ -14,7 +13,7 @@ const cartRoutes = require("./routes/cartRoutes");
 const orderRoutes = require("./routes/orderRoutes");
 const paymentRoutes = require("./routes/paymentRoutes");
 const webhookRoutes = require("./routes/webhookRoutes");
-const reviewRoutes = require("./routes/reviewRoutes");
+const reviewRoutes = require("./routes/ReviewRoutes");
 
 const app = express();
 
