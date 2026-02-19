@@ -10,4 +10,7 @@ router.post('/register', upload.single("file"), registerUser);
 router.post('/login', loginUser);
 router.get('/profile', protect, getUserProfile);
 
+
+
+
 module.exports = router;

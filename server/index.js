@@ -1,4 +1,5 @@
 // ✅ Load environment variables FIRST
+
 require("dotenv").config();
 
 const express = require("express");
@@ -13,6 +14,7 @@ const cartRoutes = require("./routes/cartRoutes");
 const orderRoutes = require("./routes/orderRoutes");
 const paymentRoutes = require("./routes/paymentRoutes");
 const webhookRoutes = require("./routes/webhookRoutes");
+const reviewRoutes = require("./routes/reviewRoutes");
 
 const app = express();
 
@@ -43,6 +45,8 @@ app.use("/api/orders", orderRoutes);
 //payemnt
 app.use('/api/payment', paymentRoutes);
 app.use('/webhook', webhookRoutes);
+
+app.use('/api/review' ,reviewRoutes);
 
 
 // ✅ Start the server
