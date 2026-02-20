@@ -1,4 +1,6 @@
-import React, { createContext, useState, useEffect, useContext } from "react";
+
+import PropTypes from "prop-types";
+import  { createContext, useState, useEffect, useContext } from "react";
 import axiosInstance from "../../utils/axiosInstance";
 import { API_PATHS } from "../../utils/apiPaths";
 
@@ -49,6 +51,11 @@ const UserProvider = ({ children }) => {
     </UserContext.Provider>
   );
 };
+
+UserProvider.propTypes = {
+  children: PropTypes.node.isRequired,
+};
+
 
 export default UserProvider;
 
