@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import axiosInstance from "@/utils/axiosInstance";
 import { API_PATHS } from "@/utils/apiPaths";
-import  UserContext  from "@/components/providers/UserProvider";
+import  { UserContext } from "@/components/providers/UserProvider";
 
 const Login = ({ onSuccess, switchToSignup }) => {
   const navigate = useNavigate();

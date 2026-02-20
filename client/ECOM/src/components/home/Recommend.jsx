@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import axiosInstance from "../../utils/axiosInstance";
 import CartPopup from "../../components/box/CartPopup";
 import { Heart, ShoppingCart, Star } from "lucide-react";
-import { useUser } from "../providers/UserProvider";
+import { useUser } from "@/components/providers/UserProvider";
 
 const Recommend = () => {
   const [products, setProducts] = useState([]);
