@@ -1,4 +1,7 @@
-import React, { useContext, useState } from "react";
+import PropTypes from "prop-types";
+import { useContext, useState } from "react";
+
+
 import { useNavigate } from "react-router-dom";
 import {
   Eye,
@@ -428,6 +431,9 @@ const SignUp = ({ switchToLogin }) => {
       </Card>
     </motion.div>
   );
+};
+SignUp.propTypes = {
+  switchToLogin: PropTypes.func.isRequired,
 };
 
 export default SignUp;
