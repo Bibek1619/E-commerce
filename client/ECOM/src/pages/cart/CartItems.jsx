@@ -3,7 +3,7 @@ import { Minus, Plus, Trash2 } from "lucide-react";
 import { toast } from "react-hot-toast";
 import { useCart } from "@/components/providers/cart-provider";
 import { Button } from "@/components/ui/button"; // optional if you move Button to /ui/Button.jsx
-import  { Card,CardHeader, CardContent, CardTitle } from "@/components/ui/Card"; // optional if you move Card to /ui/Card.jsx
+import  { Card,CardHeader, CardContent, CardTitle } from "@/components/ui/card"; // optional if you move Card to /ui/Card.jsx
 
 export default function CartItems({ items, selectedIds, setSelectedIds }) {
   const { updateQuantity, removeItem, isLoggedIn } = useCart();
