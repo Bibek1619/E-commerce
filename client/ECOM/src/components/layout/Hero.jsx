@@ -8,7 +8,7 @@ import { Link } from 'react-router-dom';
 const featuredSlideProducts = [
   {
     id: '1',
-    image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQVsF_hDLhlXM-BJ2UO8VK_SXKO8uzNIeC7vf35zzCptVCAtLWWpUhvUtVGdkXjEBJDDOc&usqp=CAU',
+    image: 'https://www.nepaltraveladventure.com/blog/wp-content/uploads/2024/10/mad-honey.jpg',
     alt: 'Authentic Nepali Handicrafts',
   },
   {
