@@ -18,12 +18,15 @@ const reviewRoutes = require("./routes/reviewRoutes");
 const app = express();
 
 // ✅ CORS config
+import cors from "cors";
+
 app.use(
   cors({
-    origin: "*",
-    methods: ["GET", "PUT", "POST", "DELETE"],
+    origin: "https://e-commerce-1t7x.vercel.app",
+    credentials: true,
   })
 );
+
 
 // ✅ Connect to MongoDB
 connectDB();
