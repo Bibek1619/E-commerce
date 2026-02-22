@@ -13,7 +13,7 @@ const cartRoutes = require("./routes/cartRoutes");
 const orderRoutes = require("./routes/orderRoutes");
 const paymentRoutes = require("./routes/paymentRoutes");
 const webhookRoutes = require("./routes/webhookRoutes");
-const reviewRoutes = require("./routes/ReviewRoutes");
+const reviewRoutes = require("./routes/reviewRoutes");
 
 const app = express();
 
